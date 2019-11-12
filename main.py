@@ -8,7 +8,6 @@ BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
 pad_width = 800  # 게임화면의 가로크기
 pad_height = 1000  # 게임화면의 세로크기
-balls = []
 enemies = []
 spawn_rate = 40
 spawn_cnt = 30
@@ -36,11 +35,6 @@ while game_over == False:
     screen.fill(pygame.Color('white'))
     Classes.show_player_state(player, screen)
 
-    # 공 관리
-    for ball in balls:
-        ball.update()
-        screen.blit(ball.image, ball.rect)
-
     # enemy 관리
     spawn_cnt += 1
     if spawn_cnt > spawn_rate:
@@ -53,9 +47,14 @@ while game_over == False:
         enemy.update(player)
         screen.blit(enemy.image, enemy.rect)
 
-    print(player.mp)
+    # 공 관리
+    for ball in Classes.balls:
+        ball.update()
+        screen.blit(ball.image, ball.rect)
+
+    # print(player.mp)
     screen.blit(player.image, player.rect)
     pygame.display.flip()
-    clock.tick(10)
+    clock.tick(30)
 
 pygame.quit()

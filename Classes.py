@@ -50,25 +50,46 @@ class GameObject:
 
 class Enemy(GameObject):
     direction = None  # User 까지 방향 벡터
-    detect_rate = 5
-    detect_cnt = 4
+    detect_rate = 4
+    detect_cnt = 3
 
     def __init__(self, position, monster_num):
         # position : user 를 둘 위치
         # monster_num : monster 종류 0, 1, 2, 3
+
+        # 정보
         self.id = monster_num * 96
+        self.tic = 0
+        self.event_name = ''
+        self.attack_motion_number = 0
         if monster_num == 0:    # 초록이
-            self.default_speed = 4
-            self.speed = 4
+            self.default_speed = 10
+            self.speed = 10
+            self.hp = 1000
+            self.max_hp = 1000
+            self.hp_recovery_speed = 0
+            self.attack_damage = 100
         if monster_num == 1:    # 하양이
-            self.default_speed = 2
-            self.speed = 2
+            self.default_speed = 5
+            self.speed = 5
+            self.hp = 1000
+            self.max_hp = 1000
+            self.hp_recovery_speed = 5
+            self.attack_damage = 400
         if monster_num == 2:    # 파랑이
-            self.default_speed = 2
-            self.speed = 2
+            self.default_speed = 5
+            self.speed = 5
+            self.hp = 10000
+            self.max_hp = 10000
+            self.hp_recovery_speed = 5
+            self.attack_damage = 50
         if monster_num == 3:    # 검댕이
-            self.default_speed = 8
-            self.speed = 8
+            self.default_speed = 15
+            self.speed = 15
+            self.hp = 100
+            self.max_hp = 100
+            self.hp_recovery_speed = 0
+            self.attack_damage = 20
 
         self.sheet = pygame.image.load('img/enemy.png')
         self.sheet.set_clip(pygame.Rect(0, 0, 32, 32))
@@ -79,16 +100,6 @@ class Enemy(GameObject):
 
         # 바로 이전 상태 저장 변수
         self.bef_state = 'stand_left'
-
-        # 정보
-        self.event_name = ''
-        self.attack_motion_number = 0
-        self.mp = 600
-        self.max_mp = 600
-        self.mp_recovery_speed = 5
-        self.hp = 1000
-        self.max_hp = 1000
-        self.hp_recovery_speed = 5
 
         # 이동 모션
         self.down_states = {0: (self.id, 0, 32, 32),
@@ -143,6 +154,12 @@ class Enemy(GameObject):
 
     def update(self, player):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
+        # tic 계산
+        self.tic += 1
+        if 30 / self.speed > self.tic:
+            return
+        self.tic = 0
+
         # 이벤트명 설정
         self.enemy_to_user(player)
 
@@ -163,16 +180,16 @@ class Enemy(GameObject):
         # 이동 이벤트
         if self.event_name == 'left':
             self.clip(self.left_states)
-            self.rect.x -= self.speed
+            self.rect.x -= 4
         if self.event_name == 'right':
             self.clip(self.right_states)
-            self.rect.x += self.speed
+            self.rect.x += 4
         if self.event_name == 'up':
             self.clip(self.up_states)
-            self.rect.y -= self.speed
+            self.rect.y -= 4
         if self.event_name == 'down':
             self.clip(self.down_states)
-            self.rect.y += self.speed
+            self.rect.y += 4
 
         # 정지 이벤트
         if self.event_name == 'stand_left':
@@ -230,23 +247,30 @@ class User(GameObject):
         self.hp = 1000
         self.max_hp = 1000
         self.hp_recovery_speed = 5
-        self.speed = 5
+        self.speed = 15
+        self.tic = 0
 
     def update(self):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
+        # tic 계산
+        self.tic += 1
+        if 30 / self.speed > self.tic:
+            return
+        self.tic = 0
+
         # 이동 이벤트
         if self.event_name == 'left':
             self.clip(self.left_states)
-            self.rect.x -= self.speed
+            self.rect.x -= 5
         if self.event_name == 'right':
             self.clip(self.right_states)
-            self.rect.x += self.speed
+            self.rect.x += 5
         if self.event_name == 'up':
             self.clip(self.up_states)
-            self.rect.y -= self.speed
+            self.rect.y -= 5
         if self.event_name == 'down':
             self.clip(self.down_states)
-            self.rect.y += self.speed
+            self.rect.y += 5
 
         # 공격 이벤트
         if self.event_name[0:6] == 'attack':
@@ -365,8 +389,15 @@ class Ball(GameObject):
     def __init__(self, x, y, speed, width, height):
         self.speed = speed
         super(Ball, self).__init__([x, y], width, height)
+        self.tic = 0
 
     def update(self):
+        # tic 계산
+        self.tic += 1
+        if 3 > self.tic:
+            return
+        self.tic = 0
+
         if self.vector == 'down':
             self.clip(self.down_states)
             self.rect.y += self.speed
@@ -451,7 +482,7 @@ class Blade(Ball):
 class Leaf(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
-        self.sheet = pygame.image.load('img/leaf2.png')
+        self.sheet = pygame.image.load('img/leaf2.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 100, 100))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
