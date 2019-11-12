@@ -33,7 +33,6 @@ while game_over == False:
 
     # 플레이어 관리
     player.update()
-    Classes.show_player_state(player, screen, True)
 
     # enemy 관리
     spawn_cnt += 1
@@ -57,6 +56,10 @@ while game_over == False:
                 player.hp -= 10
 
     # print(player.mp)
+    Classes.show_player_state(player, screen, True)
+    for enemy in enemies:
+        Classes.show_player_state(enemy, screen, False)
+
     screen.blit(player.image, player.rect)
     pygame.display.flip()
     clock.tick(30)

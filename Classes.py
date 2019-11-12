@@ -591,12 +591,18 @@ def texting(arg, x, y, color, screen):
 def show_player_state(player, screen, mp_t):
     # texting(player.hp, 100, 50, 'red', screen)
     # texting(player.mp, 100, 80, 'blue', screen)
-
-    pygame.draw.rect(screen, (100, 0, 0), (player.rect.x-10, player.rect.y - 20, 50, 8))
-    pygame.draw.rect(screen, (255, 0, 0),
-                     (player.rect.x-10, player.rect.y - 20, 50 - ((player.max_hp - player.hp) / player.max_hp * 50), 8))
     if mp_t:
-        pygame.draw.rect(screen, (0, 0, 80), (player.rect.x-10, player.rect.y - 10, 50, 8))
+        up = 20
+        hp_color = (255, 0, 0)
+    else:
+        up = 10
+        hp_color = (125, 0, 0)
+
+    pygame.draw.rect(screen, (100, 0, 0), (player.rect.x, player.rect.y - up, 32, 8))
+    pygame.draw.rect(screen, hp_color,
+                     (player.rect.x, player.rect.y - up, 32 - ((player.max_hp - player.hp) / player.max_hp * 32), 8))
+    if mp_t:
+        pygame.draw.rect(screen, (0, 0, 80), (player.rect.x, player.rect.y - 10, 32, 8))
         pygame.draw.rect(screen, (50, 100, 255),
-                         (player.rect.x-10, player.rect.y - 10,
-                          50 - ((player.max_mp - player.mp) / player.max_mp * 50), 8))
+                         (player.rect.x, player.rect.y - 10,
+                          32 - ((player.max_mp - player.mp) / player.max_mp * 32), 8))
