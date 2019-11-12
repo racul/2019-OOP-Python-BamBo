@@ -11,7 +11,7 @@ balls = []
 burn_damage = 10
 
 
-class GameObject:
+class GameObject(pygame.sprite.Sprite):
     rect = pygame.Rect
     vector = ''
     down_states = {}
@@ -20,8 +20,10 @@ class GameObject:
     up_states = {}
     sheet = pygame.image
     reset_frame = 0
+    mask = pygame.Mask
 
     def __init__(self, position, width, height):
+        pygame.sprite.Sprite.__init__(self)
         self.rect.topleft = position
         self.frame = 0
         self.width = width
@@ -96,6 +98,7 @@ class Enemy(GameObject):
         self.sheet.set_clip(pygame.Rect(0, 0, 32, 32))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
         self.event_name = ''
         super(Enemy, self).__init__(position, 32, 32)
 
@@ -202,6 +205,7 @@ class Enemy(GameObject):
         if self.event_name == 'stand_down':
             self.clip(self.down_stand)
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class User(GameObject):
@@ -210,6 +214,7 @@ class User(GameObject):
         self.sheet = pygame.image.load('img/Fumiko_1.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 24, 32))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         # 위치, 크기
         self.rect = self.image.get_rect()
         super(User, self).__init__(position, 24, 32)
@@ -314,6 +319,7 @@ class User(GameObject):
 
         # sheet 의 내용을 image 에 저장
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
 
     def check_mp(self, ball_type):
         if ball_type == 'fireball' and self.mp >= 100:
@@ -412,6 +418,7 @@ class Ball(GameObject):
             self.rect.x += self.speed
             self.clip(self.right_states)
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
 
         if self.rect.x > pad_width + 200 or self.rect.x < -200 or self.rect.y > pad_height + 200 or self.rect.y < -200:
             balls.remove(self)
@@ -420,7 +427,7 @@ class Ball(GameObject):
 class Fireball(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
-        self.sheet = pygame.image.load('img/fireball.png')
+        self.sheet = pygame.image.load('img/fireball.png').convert_alpha()
         if vector == 'right' or vector == 'left':
             self.sheet.set_clip(pygame.Rect(0, 0, 75, 40))
             self.height = 40
@@ -430,6 +437,7 @@ class Fireball(Ball):
             self.height = 75
             self.width = 40
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         if vector == 'up':
             self.rect.topleft = [x - 15, y - 40]
@@ -451,9 +459,10 @@ class Fireball(Ball):
 class Blade(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
-        self.sheet = pygame.image.load('img/blade2.png')
+        self.sheet = pygame.image.load('img/blade2.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 100, 100))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         super(Blade, self).__init__(x, y, 15, 100, 100)
         if vector == 'up':
@@ -487,6 +496,7 @@ class Leaf(Ball):
         self.sheet = pygame.image.load('img/leaf2.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(325, 625, 100, 100))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         super(Leaf, self).__init__(x, y, 4, 100, 100)
         if vector == 'up':
@@ -512,9 +522,10 @@ class Leaf(Ball):
 class Dark(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
-        self.sheet = pygame.image.load('img/dark2.png')
+        self.sheet = pygame.image.load('img/dark2.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 100, 100))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         if vector == 'up':
             self.rect.topleft = [x - 33, y - 50]
@@ -540,9 +551,10 @@ class Dark(Ball):
 class Lightning(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
-        self.sheet = pygame.image.load('img/lightning2.png')
+        self.sheet = pygame.image.load('img/lightning2.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 273, 566))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         if vector == 'right':
             self.rect.topleft = [x - 50, y]
@@ -576,6 +588,15 @@ def texting(arg, x, y, color, screen):
     screen.blit(text, text_rect)  # 화면에 텍스트객체를 그린다.
 
 
-def show_player_state(player, screen):
-    texting(player.hp, 100, 50, 'red', screen)
-    texting(player.mp, 100, 80, 'blue', screen)
+def show_player_state(player, screen, mp_t):
+    # texting(player.hp, 100, 50, 'red', screen)
+    # texting(player.mp, 100, 80, 'blue', screen)
+
+    pygame.draw.rect(screen, (100, 0, 0), (player.rect.x-10, player.rect.y - 20, 50, 8))
+    pygame.draw.rect(screen, (255, 0, 0),
+                     (player.rect.x-10, player.rect.y - 20, 50 - ((player.max_hp - player.hp) / player.max_hp * 50), 8))
+    if mp_t:
+        pygame.draw.rect(screen, (0, 0, 80), (player.rect.x-10, player.rect.y - 10, 50, 8))
+        pygame.draw.rect(screen, (50, 100, 255),
+                         (player.rect.x-10, player.rect.y - 10,
+                          50 - ((player.max_mp - player.mp) / player.max_mp * 50), 8))

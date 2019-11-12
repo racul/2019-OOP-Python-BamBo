@@ -33,7 +33,7 @@ while game_over == False:
 
     # 플레이어 관리
     player.update()
-    Classes.show_player_state(player, screen)
+    Classes.show_player_state(player, screen, True)
 
     # enemy 관리
     spawn_cnt += 1
@@ -51,6 +51,10 @@ while game_over == False:
     for ball in Classes.balls:
         ball.update()
         screen.blit(ball.image, ball.rect)
+        ball_type = str(type(ball))[16:-2]
+        if ball_type == 'Leaf':
+            if pygame.sprite.collide_mask(ball, player):
+                player.hp -= 10
 
     # print(player.mp)
     screen.blit(player.image, player.rect)
