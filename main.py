@@ -1,4 +1,6 @@
 import pygame
+import time
+import random
 import Classes
 
 # 게임에 사용되는 전역변수 정의
@@ -7,6 +9,9 @@ RED = (255, 0, 0)
 pad_width = 800  # 게임화면의 가로크기
 pad_height = 1000  # 게임화면의 세로크기
 balls = []
+enemies = []
+spawn_rate = 40
+spawn_cnt = 30
 
 pygame.init()
 
@@ -20,21 +25,33 @@ game_over = False
 
 while game_over == False:
 
-    # 
+    # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_over = True
         player.handle_event(event)
 
-
+    # 플레이어 관리
     player.update()
     screen.fill(pygame.Color('white'))
-    Classes.show_player_state()
+    Classes.show_player_state(player, screen)
 
-    # 공 처리
+    # 공 관리
     for ball in balls:
         ball.update()
         screen.blit(ball.image, ball.rect)
+
+    # enemy 관리
+    spawn_cnt += 1
+    if spawn_cnt > spawn_rate:
+        spawn_cnt = 0
+        tmp_num = random.randrange(0, 4)
+        tmp_x = random.choice([0, pad_width])
+        tmp_y = random.randrange(0, pad_height)
+        enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
+    for enemy in enemies:
+        enemy.update(player)
+        screen.blit(enemy.image, enemy.rect)
 
     print(player.mp)
     screen.blit(player.image, player.rect)

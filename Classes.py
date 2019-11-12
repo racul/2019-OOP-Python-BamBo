@@ -50,16 +50,31 @@ class GameObject:
 
 class Enemy(GameObject):
     direction = None  # User 까지 방향 벡터
+    detect_rate = 5
+    detect_cnt = 4
 
-    def __init__(self, position, monster_num, speed):
+    def __init__(self, position, monster_num):
         # position : user 를 둘 위치
-        # monster_num : monster 종류
+        # monster_num : monster 종류 0, 1, 2, 3
+        self.id = monster_num * 96
+        if monster_num == 0:    # 초록이
+            self.default_speed = 4
+            self.speed = 4
+        if monster_num == 1:    # 하양이
+            self.default_speed = 2
+            self.speed = 2
+        if monster_num == 2:    # 파랑이
+            self.default_speed = 2
+            self.speed = 2
+        if monster_num == 3:    # 검댕이
+            self.default_speed = 8
+            self.speed = 8
+
         self.sheet = pygame.image.load('img/enemy.png')
-        self.sheet.set_clip(pygame.Rect(monster_num + 32, 0, 32, 32))
+        self.sheet.set_clip(pygame.Rect(0, 0, 32, 32))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
         self.event_name = ''
-        monster_num *= 32
         super(Enemy, self).__init__(position, 32, 32)
 
         # 바로 이전 상태 저장 변수
@@ -74,18 +89,16 @@ class Enemy(GameObject):
         self.hp = 1000
         self.max_hp = 1000
         self.hp_recovery_speed = 5
-        self.default_speed = speed
-        self.speed = speed
 
         # 이동 모션
-        self.down_states = {0: (72, 0, 24, 32),
-                            1: (monster_num + 32, 0, 32, 32), 2: (monster_num + 64, 0, 32, 32)}
-        self.left_states = {0: (monster_num, 32, 32, 32),
-                            1: (monster_num + 32, 32, 32, 32), 2: (monster_num + 64, 32, 32, 32)}
-        self.right_states = {0: (monster_num, 64, 32, 32),
-                             1: (monster_num + 32, 64, 32, 32), 2: (monster_num + 64, 64, 32, 32)}
-        self.up_states = {0: (monster_num, 96, 24, 32),
-                          1: (monster_num + 32, 96, 32, 32), 2: (monster_num + 64, 96, 32, 32)}
+        self.down_states = {0: (self.id, 0, 32, 32),
+                            1: (self.id + 32, 0, 32, 32), 2: (self.id + 64, 0, 32, 32)}
+        self.left_states = {0: (self.id, 32, 32, 32),
+                            1: (self.id + 32, 32, 32, 32), 2: (self.id + 64, 32, 32, 32)}
+        self.right_states = {0: (self.id, 64, 32, 32),
+                             1: (self.id + 32, 64, 32, 32), 2: (self.id + 64, 64, 32, 32)}
+        self.up_states = {0: (self.id, 96, 32, 32),
+                          1: (self.id + 32, 96, 32, 32), 2: (self.id + 64, 96, 32, 32)}
 
         # 정지 모션
         self.down_stand = (0, 0, 32, 32)
@@ -101,6 +114,11 @@ class Enemy(GameObject):
 
     def enemy_to_user(self, player):
         # direction 구하기
+        self.detect_cnt += 1
+        if self.detect_rate > self.detect_cnt:
+            return
+        self.detect_cnt = 0
+
         x = player.rect.topleft[0] - self.rect.topleft[0]
         y = player.rect.topleft[1] - self.rect.topleft[1]
         if abs(x) > abs(y):
@@ -510,7 +528,7 @@ class Lightning(Ball):
                           3: (13, 590, 241, 490)}
 
 
-def texting(arg, x, y, color):
+def texting(arg, x, y, color, screen):
     font = pygame.font.Font('freesansbold.ttf', 24)
     if color == 'blue':
         text = font.render("MP: " + str(arg).zfill(4), True, (0, 0, 255))  # zfill : 앞자리를 0으로 채움
@@ -525,6 +543,6 @@ def texting(arg, x, y, color):
     screen.blit(text, text_rect)  # 화면에 텍스트객체를 그린다.
 
 
-def show_player_state():
-    texting(player.hp, 100, 50, 'red')
-    texting(player.mp, 100, 80, 'blue')
+def show_player_state(player, screen):
+    texting(player.hp, 100, 50, 'red', screen)
+    texting(player.mp, 100, 80, 'blue', screen)
