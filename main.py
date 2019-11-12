@@ -253,6 +253,7 @@ class User(GameObject):
             self.attack_motion_number = 0
             if self.event_name[0:5] == 'stand':
                 self.bef_state = self.event_name
+                self.frame = 0
             else:
                 self.bef_state = 'stand_'+self.event_name
         else:
@@ -523,6 +524,7 @@ def show_player_state():
     texting(player.hp, 100, 50, 'red')
     texting(player.mp, 100, 80, 'blue')
 
+
 pygame.init()
 
 
@@ -550,7 +552,6 @@ while game_over == False:
         screen.blit(ball.image, ball.rect)
         if ball.rect.x > pad_width + 200 or ball.rect.x < -200 or ball.rect.y > pad_height + 200 or ball.rect.y < -200:
             balls.remove(ball)
-
 
     print(player.mp)
     screen.blit(player.image, player.rect)

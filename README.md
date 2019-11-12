@@ -59,7 +59,27 @@ pygame
 박정민 : 스프라이트를 이용한 캐릭터 이동. 맵 제작. 몹스폰. 몹AI.
 
 ## 9. 기타
-got it?
+
+hitbox)
+https://techwithtim.net/tutorials/game-development-with-python/pygame-tutorial/pygame-collision/
+https://nightshadow.tistory.com/entry/pygame-%EC%9D%98-%EC%8A%A4%ED%94%84%EB%9D%BC%EC%9D%B4%ED%8A%B8-%EC%B6%A9%EB%8F%8C%EC%B2%B4%ED%81%AC-%EB%B0%A9%EB%B2%95
+
+마법)
+https://opengameart.org/content/water-magic-effect
+https://opengameart.org/content/cosmic-time-magic-effect
+https://opengameart.org/content/pure-projectile-magic-effect 
+https://www.seekpng.com/ipng/u2q8q8i1u2t4q8i1_animation-sprite-electric-blue-lightning-game-lightning-animation/ 
+https://avangs.info/resource_200x/159728
+
+캐릭터)
+https://opengameart.org/content/fumiko-complete-charset
+https://www.deviantart.com/my-invader-mia/art/Creepypasta-Sprite-sheet-505118676
+https://github.com/skoam/fumiko-pygame
+https://stackoverflow.com/questions/30418824/pygame-how-to-get-attack-controls-working
+음악 넣기 / 화면에 text 띄우기)
+https://futurestorys.tistory.com/102
+https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
+
 <hr>
 
 
