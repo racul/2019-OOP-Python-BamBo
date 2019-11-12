@@ -19,6 +19,7 @@ class GameObject:
     right_states = {}
     up_states = {}
     sheet = pygame.image
+    reset_frame = 0
 
     def __init__(self, position, width, height):
         self.rect.topleft = position
@@ -33,7 +34,7 @@ class GameObject:
         # 프레임을 업데이트 해주는 함수
         self.frame += 1
         if self.frame > (len(frame_set) - 1):
-            self.frame = 0
+            self.frame = self.reset_frame
         return frame_set[self.frame]
 
     def clip(self, clipped_rect):
@@ -205,8 +206,8 @@ class Enemy(GameObject):
 
 class User(GameObject):
     def __init__(self, position):
-        # position : user를 둘 위치
-        self.sheet = pygame.image.load('img/Fumiko_1.png')
+        # position : use r를 둘 위치
+        self.sheet = pygame.image.load('img/Fumiko_1.png').convert_alpha()
         self.sheet.set_clip(pygame.Rect(0, 0, 24, 32))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         # 위치, 크기
@@ -236,17 +237,17 @@ class User(GameObject):
                                   3: (72, 224, 24, 32), 4: (96, 224, 24, 32)}
 
         # 바로 이전 상태 저장 변수
-        self.bef_state = 'stand_left'
+        self.bef_state = 'stand_down'
 
         # 정보
-        self.event_name = ''
+        self.event_name = 'stand_down'
         self.attack_motion_number = 0
         self.mp = 600
         self.max_mp = 600
         self.mp_recovery_speed = 5
         self.hp = 1000
         self.max_hp = 1000
-        self.hp_recovery_speed = 5
+        self.hp_recovery_speed = 1
         self.speed = 15
         self.tic = 0
 
@@ -463,6 +464,7 @@ class Blade(Ball):
             self.rect.topleft = [x - 25, y - 30]
         if vector == 'left':
             self.rect.topleft = [x - 60, y - 30]
+        self.reset_frame = 3
 
         # 이동 모션
         self.right_states = {0: (25, 325, 100, 100), 1: (175, 325, 100, 100), 2: (325, 325, 100, 100),
@@ -483,7 +485,7 @@ class Leaf(Ball):
     def __init__(self, x, y, vector):
         self.vector = vector
         self.sheet = pygame.image.load('img/leaf2.png').convert_alpha()
-        self.sheet.set_clip(pygame.Rect(0, 0, 100, 100))
+        self.sheet.set_clip(pygame.Rect(325, 625, 100, 100))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
         super(Leaf, self).__init__(x, y, 4, 100, 100)

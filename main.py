@@ -24,6 +24,7 @@ game_over = False
 
 while game_over == False:
 
+    screen.fill(pygame.Color('white'))
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -32,7 +33,6 @@ while game_over == False:
 
     # 플레이어 관리
     player.update()
-    screen.fill(pygame.Color('white'))
     Classes.show_player_state(player, screen)
 
     # enemy 관리
