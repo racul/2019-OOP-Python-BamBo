@@ -95,7 +95,7 @@ class Enemy(GameObject):
             self.attack_damage = 20
 
         self.sheet = pygame.image.load('img/enemy.png')
-        self.sheet.set_clip(pygame.Rect(0, 0, 32, 32))
+        self.sheet.set_clip(pygame.Rect(self.id, 0, 32, 32))
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
@@ -116,10 +116,10 @@ class Enemy(GameObject):
                           1: (self.id + 32, 96, 32, 32), 2: (self.id + 64, 96, 32, 32)}
 
         # 정지 모션
-        self.down_stand = (0, 0, 32, 32)
-        self.left_stand = (0, 32, 32, 32)
-        self.right_stand = (0, 64, 32, 32)
-        self.up_stand = (0, 96, 32, 32)
+        self.down_stand = (self.id, 0, 32, 32)
+        self.left_stand = (self.id, 32, 32, 32)
+        self.right_stand = (self.id, 64, 32, 32)
+        self.up_stand = (self.id, 96, 32, 32)
 
         # 상태 이상
         self.slow = 0
@@ -137,18 +137,18 @@ class Enemy(GameObject):
         x = player.rect.topleft[0] - self.rect.topleft[0]
         y = player.rect.topleft[1] - self.rect.topleft[1]
         if abs(x) > abs(y):
-            if x == 32:
+            if 0 < x <= 32:
                 self.direction = 'stand_right'
-            elif x == -32:
+            elif 0 > x > -32:
                 self.direction = 'stand_left'
             elif x > 0:
                 self.direction = 'right'
             else:
                 self.direction = 'left'
         else:
-            if x == 0 and y == 32:
+            if -30 < x < 30 and 0 < y <= 32:
                 self.direction = 'stand_down'
-            elif x == 0 and y == -32:
+            elif -30 < x < 30 and 0 > y >= -32:
                 self.direction = 'stand_up'
             elif y > 0:
                 self.direction = 'down'
@@ -252,7 +252,7 @@ class User(GameObject):
         self.mp_recovery_speed = 5
         self.hp = 1000
         self.max_hp = 1000
-        self.hp_recovery_speed = 1
+        self.hp_recovery_speed = 3
         self.speed = 15
         self.tic = 0
 

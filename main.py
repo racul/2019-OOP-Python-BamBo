@@ -6,16 +6,17 @@ import Classes
 # 게임에 사용되는 전역변수 정의
 BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
-pad_width = 800  # 게임화면의 가로크기
-pad_height = 1000  # 게임화면의 세로크기
+pad_width = 710  # 게임화면의 가로크기
+pad_height = 550  # 게임화면의 세로크기
 enemies = []
 spawn_rate = 40
 spawn_cnt = 30
 
 pygame.init()
 
-
-screen = pygame.display.set_mode((pad_height, pad_width))
+background = pygame.image.load('img/field2.png')
+background.fill((100, 100, 100, 200), None, pygame.BLEND_RGBA_MULT)
+screen = pygame.display.set_mode((pad_width, pad_height))
 pygame.display.set_caption("Python/Pygame Animation")
 clock = pygame.time.Clock()
 player = Classes.User((150, 150))
@@ -23,8 +24,10 @@ player = Classes.User((150, 150))
 game_over = False
 
 while game_over == False:
+    # 배경
+    screen.fill((0, 0, 0))
+    screen.blit(background, (0, 0))
 
-    screen.fill(pygame.Color('white'))
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -39,8 +42,8 @@ while game_over == False:
     if spawn_cnt > spawn_rate:
         spawn_cnt = 0
         tmp_num = random.randrange(0, 4)
-        tmp_x = random.choice([0, pad_width])
-        tmp_y = random.randrange(0, pad_height)
+        tmp_x = random.choice([0, pad_width-32])
+        tmp_y = random.randrange(0, pad_height-32)
         enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
     for enemy in enemies:
         enemy.update(player)
