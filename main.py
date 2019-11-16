@@ -6,8 +6,8 @@ import Classes
 # 게임에 사용되는 전역변수 정의
 BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
-pad_width = 710  # 게임화면의 가로크기
-pad_height = 550  # 게임화면의 세로크기
+pad_width = Classes.pad_width  # 게임화면의 가로크기
+pad_height = Classes.pad_height  # 게임화면의 세로크기
 level_tic = 0
 fps = 30
 spawn_rate = fps * 7
@@ -105,7 +105,7 @@ while not Quit:
             Classes.show_player_state(enemy, screen, False)
 
         screen.blit(player.image, player.rect)
-        Classes.texting(Classes.score, 40, 40, (255, 10, 10), screen)
+        Classes.texting(Classes.score, 40, 40, (255, 10, 10), 24, screen)
         pygame.display.flip()
         clock.tick(fps)
 
@@ -113,8 +113,12 @@ while not Quit:
             player.hp = 0
             game_over = True
 
-    Classes.texting("It's time to study now. If you want to restart, press space",
-                    screen.get_rect().centerx, screen.get_rect().centery, (255, 255, 255), screen)
+    Classes.texting("You DEAD!!!!",
+                    screen.get_rect().centerx, screen.get_rect().centery , (255, 0, 0), 50, screen)
+    Classes.texting("It's time to study now",
+                    screen.get_rect().centerx, screen.get_rect().centery + 50, (255, 100, 100), 30, screen)
+    Classes.texting("If you want to restart, prees SPACE",
+                    screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 18, screen)
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

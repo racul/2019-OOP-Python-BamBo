@@ -4,8 +4,8 @@ import random  # random 라이브러리 임포트
 # 게임에 사용되는 전역변수 정의
 BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
-pad_width = 800  # 게임화면의 가로크기
-pad_height = 1000  # 게임화면의 세로크기
+pad_width = 710  # 게임화면의 가로크기
+pad_height = 550  # 게임화면의 세로크기
 balls = []
 enemies = []
 score = 0
@@ -53,8 +53,8 @@ class GameObject(pygame.sprite.Sprite):
 
 class Enemy(GameObject):
     direction = None  # User 까지 방향 벡터
-    detect_rate = 4
-    detect_cnt = 3
+    detect_rate = 10
+    detect_cnt = 9
 
     def __init__(self, position, monster_num):
         # position : user 를 둘 위치
@@ -280,19 +280,23 @@ class User(GameObject):
         # 이동 이벤트
         if self.event_name == 'left':
             self.clip(self.left_states)
-            self.rect.x -= 5
+            if self.rect.x > 5:
+                self.rect.x -= 5
         if self.event_name == 'right':
             self.clip(self.right_states)
-            self.rect.x += 5
+            if self.rect.x < pad_width - 28:
+                self.rect.x += 5
         if self.event_name == 'up':
             self.clip(self.up_states)
-            self.rect.y -= 5
+            if self.rect.y > 5:
+                self.rect.y -= 5
         if self.event_name == 'down':
             self.clip(self.down_states)
-            self.rect.y += 5
+            if self.rect.y < pad_height - 34:
+                self.rect.y += 5
 
         # 공격 이벤트
-        if self.event_name[0:6] == 'attack':
+        if self.event_name[0:6] == 'attack' or 0 < self.attack_motion_number < 3:
             # 던지는 모션이 시작되었고, 마나가 충분하면 던진다
             if self.attack_motion_number == 1 and self.check_mp(self.event_name[7:]):
                 self.throw(self.event_name[7:])
@@ -315,7 +319,7 @@ class User(GameObject):
         if self.event_name == 'stand_down':
             self.clip(self.down_stand)
 
-        if self.event_name[0:6] != 'attack':
+        if self.event_name[0:6] != 'attack' and self.attack_motion_number == 3:
             self.attack_motion_number = 0
             if self.event_name[0:5] == 'stand':
                 self.bef_state = self.event_name
@@ -492,9 +496,9 @@ class Fireball(Ball):
         self.up_states = {0: (15, 225, 40, 75), 1: (90, 225, 40, 75), 2: (165, 225, 40, 75)}
 
         # 정보
-        self.damage = 10
+        self.damage = 30
         self.slow = 0       # leaf
-        self.burned = 1000   # fireball
+        self.burned = 5000   # fireball
         self.paralysis = 0  # blade
         self.confusion = 0  # dark
 
@@ -643,8 +647,8 @@ def destroy(ball, enemy):
         ball.destroyer -= 1000
 
 
-def texting(arg, x, y, color, screen):
-    font = pygame.font.Font('freesansbold.ttf', 24)
+def texting(arg, x, y, color, font_size, screen):
+    font = pygame.font.Font('freesansbold.ttf', font_size)
     text = font.render(str(arg).zfill(4), True, color)  # zfill : 앞자리를 0으로 채움
 
     text_rect = text.get_rect()  # 텍스트 객체를 출력위치에 가져옴
