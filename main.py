@@ -12,6 +12,7 @@ level_tic = 0
 fps = 30
 spawn_rate = fps * 7
 spawn_cnt = fps * 6
+boss_rate = 15
 boss_spawn_cnt = 0
 
 
@@ -48,12 +49,22 @@ while not Quit:
         level_tic += 1
         if level_tic == fps * 20:
             spawn_rate = fps * 6
+            boss_rate = 14
         if level_tic == fps * 60:
             spawn_rate = fps * 5
+            boss_rate = 12
         if level_tic == fps * 180:
             spawn_rate = fps * 4
+            boss_rate = 10
         if level_tic == fps * 360:
             spawn_rate = fps * 3
+            boss_rate = 6
+        if level_tic == fps * 480:
+            spawn_rate = fps * 2
+            boss_rate = 8
+        if level_tic == fps * 600:
+            spawn_rate = fps * 1
+            boss_rate = 8
 
         # 이벤트 입력 관리
         for event in pygame.event.get():
@@ -71,7 +82,7 @@ while not Quit:
             spawn_cnt = 0
             spawn_random_enemy(boss=False)
         boss_spawn_cnt += 1
-        if boss_spawn_cnt > spawn_rate * 15:
+        if boss_spawn_cnt > spawn_rate * boss_rate:
             boss_spawn_cnt = 0
             spawn_random_enemy(boss=True)
         for enemy in Classes.enemies:
