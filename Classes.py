@@ -357,8 +357,8 @@ class User(GameObject):
         if ball_type == 'blade' and self.mp >= 80:
             self.mp -= 80
             return True
-        if ball_type == 'leaf' and self.mp >= 200:
-            self.mp -= 200
+        if ball_type == 'leaf' and self.mp >= 150:
+            self.mp -= 150
             return True
         if ball_type == 'dark' and self.mp >= 110:
             self.mp -= 110
