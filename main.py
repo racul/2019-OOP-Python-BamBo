@@ -8,9 +8,9 @@ BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
 pad_width = 710  # 게임화면의 가로크기
 pad_height = 550  # 게임화면의 세로크기
-enemies = []
-spawn_rate = 40
-spawn_cnt = 30
+spawn_rate = 100
+spawn_cnt = 60
+level_tic = 0
 
 pygame.init()
 
@@ -28,6 +28,17 @@ while game_over == False:
     screen.fill((0, 0, 0))
     screen.blit(background, (0, 0))
 
+    # 레벨 조정
+    level_tic += 1
+    if level_tic == 200:
+        spawn_rate = 180
+    if level_tic == 500:
+        spawn_rate = 160
+    if level_tic == 800:
+        spawn_rate = 120
+    if level_tic == 1600:
+        spawn_rate = 80
+
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -44,8 +55,8 @@ while game_over == False:
         tmp_num = random.randrange(0, 4)
         tmp_x = random.choice([0, pad_width-32])
         tmp_y = random.randrange(0, pad_height-32)
-        enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
-    for enemy in enemies:
+        Classes.enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
+    for enemy in Classes.enemies:
         enemy.update(player)
         screen.blit(enemy.image, enemy.rect)
 
@@ -53,14 +64,17 @@ while game_over == False:
     for ball in Classes.balls:
         ball.update()
         screen.blit(ball.image, ball.rect)
+
+    # 충돌 이벤트
+    for ball in Classes.balls:
         ball_type = str(type(ball))[16:-2]
-        if ball_type == 'Leaf':
-            if pygame.sprite.collide_mask(ball, player):
-                player.hp -= 10
+        for enemy in Classes.enemies:
+            if pygame.sprite.collide_mask(ball, enemy):
+                ball.hit(enemy)
 
     # print(player.mp)
     Classes.show_player_state(player, screen, True)
-    for enemy in enemies:
+    for enemy in Classes.enemies:
         Classes.show_player_state(enemy, screen, False)
 
     screen.blit(player.image, player.rect)

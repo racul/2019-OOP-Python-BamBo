@@ -8,6 +8,7 @@ RED = (255, 0, 0)
 pad_width = 800  # 게임화면의 가로크기
 pad_height = 1000  # 게임화면의 세로크기
 balls = []
+enemies = []
 burn_damage = 10
 
 
@@ -75,15 +76,15 @@ class Enemy(GameObject):
         if monster_num == 1:    # 하양이
             self.default_speed = 5
             self.speed = 5
-            self.hp = 1000
-            self.max_hp = 1000
+            self.hp = 2000
+            self.max_hp = 2000
             self.hp_recovery_speed = 5
             self.attack_damage = 400
         if monster_num == 2:    # 파랑이
             self.default_speed = 5
             self.speed = 5
-            self.hp = 10000
-            self.max_hp = 10000
+            self.hp = 8000
+            self.max_hp = 8000
             self.hp_recovery_speed = 5
             self.attack_damage = 50
         if monster_num == 3:    # 검댕이
@@ -122,10 +123,10 @@ class Enemy(GameObject):
         self.up_stand = (self.id, 96, 32, 32)
 
         # 상태 이상
-        self.slow = 0
-        self.burned = 0
-        self.paralysis = 0
-        self.confusion = 0
+        self.slow = 0       # leaf
+        self.burned = 0     # fireball
+        self.paralysis = 0  # blade
+        self.confusion = 0  # dark
 
     def enemy_to_user(self, player):
         # direction 구하기
@@ -158,11 +159,9 @@ class Enemy(GameObject):
 
     def update(self, player):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
-        # tic 계산
-        self.tic += 1
-        if 30 / self.speed > self.tic:
-            return
-        self.tic = 0
+        # 사망 이벤트
+        if self.hp <= 0:
+            enemies.remove(self)
 
         # 이벤트명 설정
         self.enemy_to_user(player)
@@ -170,16 +169,22 @@ class Enemy(GameObject):
         # 상태이상 판정
         if self.slow > 0:
             self.slow -= 1
-            self.speed = self.default_speed / 2
+            self.speed = self.default_speed / 4
         if self.burned > 0:
             self.burned -= 1
-            self.hp -= burn_damage
+            self.hp -= self.max_hp / 500
         if self.paralysis > 0:
             self.paralysis -= 1
             return
         if self.confusion > 0:
             self.confusion -= 1
             self.event_name = random.choice(['left', 'right', 'up', 'down'])
+
+        # tic 계산
+        self.tic += 1
+        if 30 / self.speed > self.tic:
+            return
+        self.tic = 0
 
         # 이동 이벤트
         if self.event_name == 'left':
@@ -253,7 +258,7 @@ class User(GameObject):
         self.hp = 1000
         self.max_hp = 1000
         self.hp_recovery_speed = 3
-        self.speed = 15
+        self.speed = 20
         self.tic = 0
 
     def update(self):
@@ -398,6 +403,9 @@ class Ball(GameObject):
         super(Ball, self).__init__([x, y], width, height)
         self.tic = 0
 
+    def hit(self, enemy):
+        pass
+
     def update(self):
         # tic 계산
         self.tic += 1
@@ -455,6 +463,10 @@ class Fireball(Ball):
         self.left_states = {0: (0, 110, 75, 40), 1: (75, 110, 75, 40), 2: (150, 110, 75, 40)}
         self.up_states = {0: (15, 225, 40, 75), 1: (90, 225, 40, 75), 2: (165, 225, 40, 75)}
 
+    def hit(self, enemy):
+        enemy.hp -= 10
+        enemy.burned = 1000
+
 
 class Blade(Ball):
     def __init__(self, x, y, vector):
@@ -489,6 +501,11 @@ class Blade(Ball):
                           3: (475, 325, 100, 100), 4: (625, 325, 100, 100), 5: (475, 325, 100, 100),
                           6: (325, 325, 100, 100)}
 
+    def hit(self, enemy):
+        enemy.hp -= 100
+        enemy.burned = 2
+        enemy.paralysis = 10
+
 
 class Leaf(Ball):
     def __init__(self, x, y, vector):
@@ -518,6 +535,10 @@ class Leaf(Ball):
         self.up_states = {0: (325, 625, 100, 100), 1: (475, 625, 100, 100), 2: (625, 625, 100, 100),
                           3: (475, 625, 100, 100)}
 
+    def hit(self, enemy):
+        enemy.hp -= 20
+        enemy.slow = 30
+
 
 class Dark(Ball):
     def __init__(self, x, y, vector):
@@ -546,6 +567,10 @@ class Dark(Ball):
                             3: (475, 625, 100, 100)}
         self.up_states = {0: (325, 625, 100, 100), 1: (475, 625, 100, 100), 2: (625, 625, 100, 100),
                           3: (475, 625, 100, 100)}
+
+    def hit(self, enemy):
+        enemy.hp -= 100
+        enemy.confusion = 10
 
 
 class Lightning(Ball):
