@@ -354,14 +354,14 @@ class User(GameObject):
         if ball_type == 'fireball' and self.mp >= 20:
             self.mp -= 20
             return True
-        if ball_type == 'blade' and self.mp >= 50:
-            self.mp -= 50
+        if ball_type == 'blade' and self.mp >= 80:
+            self.mp -= 80
             return True
         if ball_type == 'leaf' and self.mp >= 200:
             self.mp -= 200
             return True
-        if ball_type == 'dark' and self.mp >= 100:
-            self.mp -= 100
+        if ball_type == 'dark' and self.mp >= 110:
+            self.mp -= 110
             return True
         if ball_type == 'lightning' and self.mp >= 500:
             self.mp -= 500
