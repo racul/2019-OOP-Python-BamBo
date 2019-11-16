@@ -1,6 +1,5 @@
 import pygame  # pygame 라이브러리 임포트
 import random  # random 라이브러리 임포트
-from time import sleep
 
 # 게임에 사용되는 전역변수 정의
 BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
@@ -9,7 +8,7 @@ pad_width = 800  # 게임화면의 가로크기
 pad_height = 1000  # 게임화면의 세로크기
 balls = []
 enemies = []
-burn_damage = 10
+score = 0
 
 
 class GameObject(pygame.sprite.Sprite):
@@ -62,6 +61,7 @@ class Enemy(GameObject):
         # monster_num : monster 종류 0, 1, 2, 3
 
         # 정보
+        self.monster_num = monster_num
         self.id = monster_num * 96
         self.tic = 0
         self.event_name = ''
@@ -72,28 +72,28 @@ class Enemy(GameObject):
             self.hp = 1000
             self.max_hp = 1000
             self.hp_recovery_speed = 0
-            self.attack_damage = 100
+            self.attack_damage = 20
         if monster_num == 1:    # 하양이
             self.default_speed = 5
             self.speed = 5
             self.hp = 2000
             self.max_hp = 2000
-            self.hp_recovery_speed = 5
-            self.attack_damage = 400
+            self.hp_recovery_speed = 20
+            self.attack_damage = 40
         if monster_num == 2:    # 파랑이
             self.default_speed = 5
             self.speed = 5
             self.hp = 8000
             self.max_hp = 8000
-            self.hp_recovery_speed = 5
-            self.attack_damage = 50
+            self.hp_recovery_speed = 80
+            self.attack_damage = 5
         if monster_num == 3:    # 검댕이
             self.default_speed = 15
             self.speed = 15
             self.hp = 100
             self.max_hp = 100
             self.hp_recovery_speed = 0
-            self.attack_damage = 20
+            self.attack_damage = 10
 
         self.sheet = pygame.image.load('img/enemy.png')
         self.sheet.set_clip(pygame.Rect(self.id, 0, 32, 32))
@@ -138,18 +138,18 @@ class Enemy(GameObject):
         x = player.rect.topleft[0] - self.rect.topleft[0]
         y = player.rect.topleft[1] - self.rect.topleft[1]
         if abs(x) > abs(y):
-            if 0 < x <= 32:
+            if 0 < x <= 26:
                 self.direction = 'stand_right'
-            elif 0 > x > -32:
+            elif 0 > x > -26:
                 self.direction = 'stand_left'
             elif x > 0:
                 self.direction = 'right'
             else:
                 self.direction = 'left'
         else:
-            if -30 < x < 30 and 0 < y <= 32:
+            if -26 < x < 26 and 0 < y <= 26:
                 self.direction = 'stand_down'
-            elif -30 < x < 30 and 0 > y >= -32:
+            elif -26 < x < 26 and 0 > y >= -26:
                 self.direction = 'stand_up'
             elif y > 0:
                 self.direction = 'down'
@@ -161,7 +161,9 @@ class Enemy(GameObject):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
         # 사망 이벤트
         if self.hp <= 0:
+            global score
             enemies.remove(self)
+            score += 5
 
         # 이벤트명 설정
         self.enemy_to_user(player)
@@ -170,6 +172,8 @@ class Enemy(GameObject):
         if self.slow > 0:
             self.slow -= 1
             self.speed = self.default_speed / 4
+        else:
+            self.speed = self.default_speed
         if self.burned > 0:
             self.burned -= 1
             self.hp -= self.max_hp / 500
@@ -185,6 +189,10 @@ class Enemy(GameObject):
         if 30 / self.speed > self.tic:
             return
         self.tic = 0
+
+        # 체력 회복
+        if self.hp < self.max_hp:
+            self.hp += self.hp_recovery_speed
 
         # 이동 이벤트
         if self.event_name == 'left':
@@ -254,10 +262,10 @@ class User(GameObject):
         self.attack_motion_number = 0
         self.mp = 600
         self.max_mp = 600
-        self.mp_recovery_speed = 5
+        self.mp_recovery_speed = 1
         self.hp = 1000
         self.max_hp = 1000
-        self.hp_recovery_speed = 3
+        self.hp_recovery_speed = 1
         self.speed = 20
         self.tic = 0
 
@@ -285,7 +293,8 @@ class User(GameObject):
 
         # 공격 이벤트
         if self.event_name[0:6] == 'attack':
-            if self.attack_motion_number == 2 and self.check_mp(self.event_name[7:]):
+            # 던지는 모션이 시작되었고, 마나가 충분하면 던진다
+            if self.attack_motion_number == 1 and self.check_mp(self.event_name[7:]):
                 self.throw(self.event_name[7:])
             if self.bef_state == 'stand_left':
                 self.clip(self.throw_left_states)
@@ -327,8 +336,8 @@ class User(GameObject):
         self.mask = pygame.mask.from_surface(self.image)
 
     def check_mp(self, ball_type):
-        if ball_type == 'fireball' and self.mp >= 100:
-            self.mp -= 100
+        if ball_type == 'fireball' and self.mp >= 50:
+            self.mp -= 50
             return True
         if ball_type == 'blade' and self.mp >= 150:
             self.mp -= 150
@@ -336,8 +345,8 @@ class User(GameObject):
         if ball_type == 'leaf' and self.mp >= 200:
             self.mp -= 200
             return True
-        if ball_type == 'dark' and self.mp >= 150:
-            self.mp -= 150
+        if ball_type == 'dark' and self.mp >= 100:
+            self.mp -= 100
             return True
         if ball_type == 'lightning' and self.mp >= 500:
             self.mp -= 500
@@ -345,6 +354,8 @@ class User(GameObject):
         return False
 
     def throw(self, ball_type):
+        # 공 던지기 함수
+        # 공의 종류에 맞추어 balls 리스트에 공을 추가한다.
         if ball_type == 'fireball':
             balls.append(Fireball(self.rect.x, self.rect.y, self.bef_state[6:]))
         if ball_type == 'blade':
@@ -374,8 +385,8 @@ class User(GameObject):
                 self.event_name = 'attack_leaf'
             if event.key == pygame.K_a:
                 self.event_name = 'attack_dark'
-            if event.key == pygame.K_t:
-                self.event_name = 'attack_lightning'
+            # if event.key == pygame.K_t:
+            #     self.event_name = 'attack_lightning'
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 self.event_name = 'stand_left'
@@ -397,16 +408,33 @@ class User(GameObject):
 
 
 class Ball(GameObject):
+    damage = 0
+    slow = 0
+    burned = 0
+    paralysis = 0
+    confusion = 0
 
-    def __init__(self, x, y, speed, width, height):
+    def __init__(self, x, y, speed, width, height, class_name):
         self.speed = speed
         super(Ball, self).__init__([x, y], width, height)
         self.tic = 0
+        self.destroyer = 2000
+        self.class_name = class_name
 
     def hit(self, enemy):
-        pass
+        enemy.hp -= self.damage
+        enemy.slow = self.slow
+        enemy.burned = self.burned
+        enemy.paralysis = self.paralysis
+        enemy.confusion = self.confusion
 
     def update(self):
+        # 파괴
+        self.destroyer -= 1
+        if self.destroyer <= 0:
+            balls.remove(self)
+            print("del")
+
         # tic 계산
         self.tic += 1
         if 3 > self.tic:
@@ -447,6 +475,7 @@ class Fireball(Ball):
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        super(Fireball, self).__init__(x, y, 15, 40, 40, 'Fireball')
         if vector == 'up':
             self.rect.topleft = [x - 15, y - 40]
         if vector == 'down':
@@ -455,7 +484,6 @@ class Fireball(Ball):
             self.rect.topleft = [x, y]
         if vector == 'left':
             self.rect.topleft = [x - 40, y]
-        super(Fireball, self).__init__(x, y, 15, 40, 40)
 
         # 이동 모션
         self.right_states = {0: (0, 185, 75, 40), 1: (75, 185, 75, 40), 2: (150, 185, 75, 40)}
@@ -463,9 +491,12 @@ class Fireball(Ball):
         self.left_states = {0: (0, 110, 75, 40), 1: (75, 110, 75, 40), 2: (150, 110, 75, 40)}
         self.up_states = {0: (15, 225, 40, 75), 1: (90, 225, 40, 75), 2: (165, 225, 40, 75)}
 
-    def hit(self, enemy):
-        enemy.hp -= 10
-        enemy.burned = 1000
+        # 정보
+        self.damage = 10
+        self.slow = 0       # leaf
+        self.burned = 1000   # fireball
+        self.paralysis = 0  # blade
+        self.confusion = 0  # dark
 
 
 class Blade(Ball):
@@ -476,7 +507,7 @@ class Blade(Ball):
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        super(Blade, self).__init__(x, y, 15, 100, 100)
+        super(Blade, self).__init__(x, y, 15, 100, 100, 'Blade')
         if vector == 'up':
             self.rect.topleft = [x - 33, y - 50]
         if vector == 'down':
@@ -500,11 +531,12 @@ class Blade(Ball):
         self.up_states = {0: (25, 325, 100, 100), 1: (175, 325, 100, 100), 2: (325, 325, 100, 100),
                           3: (475, 325, 100, 100), 4: (625, 325, 100, 100), 5: (475, 325, 100, 100),
                           6: (325, 325, 100, 100)}
-
-    def hit(self, enemy):
-        enemy.hp -= 100
-        enemy.burned = 2
-        enemy.paralysis = 10
+        # 정보
+        self.damage = 900
+        self.slow = 0  # leaf
+        self.burned = 0  # fireball
+        self.paralysis = 100  # blade
+        self.confusion = 0  # dark
 
 
 class Leaf(Ball):
@@ -515,7 +547,7 @@ class Leaf(Ball):
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        super(Leaf, self).__init__(x, y, 4, 100, 100)
+        super(Leaf, self).__init__(x, y, 4, 100, 100, 'Leaf')
         if vector == 'up':
             self.rect.topleft = [x - 33, y - 50]
         if vector == 'down':
@@ -535,9 +567,12 @@ class Leaf(Ball):
         self.up_states = {0: (325, 625, 100, 100), 1: (475, 625, 100, 100), 2: (625, 625, 100, 100),
                           3: (475, 625, 100, 100)}
 
-    def hit(self, enemy):
-        enemy.hp -= 20
-        enemy.slow = 30
+        # 정보
+        self.damage = 5
+        self.slow = 60  # leaf
+        self.burned = 0  # fireball
+        self.paralysis = 0  # blade
+        self.confusion = 0  # dark
 
 
 class Dark(Ball):
@@ -548,6 +583,7 @@ class Dark(Ball):
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        super(Dark, self).__init__(x, y, 10, 100, 100, 'Dark')
         if vector == 'up':
             self.rect.topleft = [x - 33, y - 50]
         if vector == 'down':
@@ -556,7 +592,6 @@ class Dark(Ball):
             self.rect.topleft = [x - 25, y - 30]
         if vector == 'left':
             self.rect.topleft = [x - 60, y - 30]
-        super(Dark, self).__init__(x, y, 10, 100, 100)
 
         # 이동 모션
         self.right_states = {0: (325, 625, 100, 100), 1: (475, 625, 100, 100), 2: (625, 625, 100, 100),
@@ -568,9 +603,12 @@ class Dark(Ball):
         self.up_states = {0: (325, 625, 100, 100), 1: (475, 625, 100, 100), 2: (625, 625, 100, 100),
                           3: (475, 625, 100, 100)}
 
-    def hit(self, enemy):
-        enemy.hp -= 100
-        enemy.confusion = 10
+        # 정보
+        self.damage = 50
+        self.slow = 0  # leaf
+        self.burned = 0  # fireball
+        self.paralysis = 0  # blade
+        self.confusion = 50  # dark
 
 
 class Lightning(Ball):
@@ -581,11 +619,11 @@ class Lightning(Ball):
         self.image = self.sheet.subsurface(self.sheet.get_clip())
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        super(Lightning, self).__init__(x, y, 10, 100, 100, 'Lightning')
         if vector == 'right':
             self.rect.topleft = [x - 50, y]
         if vector == 'left':
             self.rect.topleft = [x - 200, y]
-        super(Lightning, self).__init__(x, y, 10, 100, 100)
 
         # 이동 모션
         self.right_states = {0: (534, 590, 241, 490), 1: (13, 71, 241, 490), 2: (534, 71, 241, 490),
@@ -598,14 +636,16 @@ class Lightning(Ball):
                           3: (13, 590, 241, 490)}
 
 
+def destroy(ball, enemy):
+    if enemy.monster_num == 2:
+        ball.destroyer -= 500
+    if ball.class_name == 'Blade':
+        ball.destroyer -= 1000
+
+
 def texting(arg, x, y, color, screen):
     font = pygame.font.Font('freesansbold.ttf', 24)
-    if color == 'blue':
-        text = font.render("MP: " + str(arg).zfill(4), True, (0, 0, 255))  # zfill : 앞자리를 0으로 채움
-    elif color == 'red':
-        text = font.render("HP: " + str(arg).zfill(4), True, (255, 0, 0))  # zfill : 앞자리를 0으로 채움
-    else:
-        text = font.render("SC: " + str(arg).zfill(4), True, (0, 0, 0))  # zfill : 앞자리를 0으로 채움
+    text = font.render(str(arg).zfill(4), True, color)  # zfill : 앞자리를 0으로 채움
 
     text_rect = text.get_rect()  # 텍스트 객체를 출력위치에 가져옴
     text_rect.centerx = x  # 출력할 때의 x 좌표를 설정한다

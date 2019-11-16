@@ -8,9 +8,22 @@ BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
 pad_width = 710  # 게임화면의 가로크기
 pad_height = 550  # 게임화면의 세로크기
-spawn_rate = 100
-spawn_cnt = 60
 level_tic = 0
+fps = 30
+spawn_rate = fps * 7
+spawn_cnt = fps * 6
+boss_spawn_cnt = 0
+
+
+def spawn_random_enemy(boss):
+    if not boss:
+        tmp_num = random.choice([0, 1, 3])
+    else:
+        tmp_num = 2
+    tmp_x = random.choice([0, pad_width - 32])
+    tmp_y = random.randrange(0, pad_height - 32)
+    Classes.enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
+
 
 pygame.init()
 
@@ -22,63 +35,104 @@ clock = pygame.time.Clock()
 player = Classes.User((150, 150))
 
 game_over = False
+Quit = False
 
-while game_over == False:
-    # 배경
-    screen.fill((0, 0, 0))
-    screen.blit(background, (0, 0))
+while not Quit:
 
-    # 레벨 조정
-    level_tic += 1
-    if level_tic == 200:
-        spawn_rate = 180
-    if level_tic == 500:
-        spawn_rate = 160
-    if level_tic == 800:
-        spawn_rate = 120
-    if level_tic == 1600:
-        spawn_rate = 80
+    while not game_over:
+        # 배경
+        screen.fill((0, 0, 0))
+        screen.blit(background, (0, 0))
 
+        # 레벨 조정
+        level_tic += 1
+        if level_tic == fps * 20:
+            spawn_rate = fps * 6
+        if level_tic == fps * 60:
+            spawn_rate = fps * 5
+        if level_tic == fps * 180:
+            spawn_rate = fps * 4
+        if level_tic == fps * 360:
+            spawn_rate = fps * 3
+
+        # 이벤트 입력 관리
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+                Quit = True
+            player.handle_event(event)
+
+        # 플레이어 관리
+        player.update()
+
+        # enemy 관리
+        spawn_cnt += 1
+        if spawn_cnt > spawn_rate:
+            spawn_cnt = 0
+            spawn_random_enemy(boss=False)
+        boss_spawn_cnt += 1
+        if boss_spawn_cnt > spawn_rate * 15:
+            boss_spawn_cnt = 0
+            spawn_random_enemy(boss=True)
+        for enemy in Classes.enemies:
+            enemy.update(player)
+            screen.blit(enemy.image, enemy.rect)
+
+        # 공 관리
+        for ball in Classes.balls:
+            ball.update()
+            screen.blit(ball.image, ball.rect)
+
+        # 충돌 이벤트
+        # 공 -> 몬스터
+        for ball in Classes.balls:
+            for enemy in Classes.enemies:
+                if pygame.sprite.collide_mask(ball, enemy):
+                    ball.hit(enemy)
+                    Classes.destroy(ball, enemy)
+        # 몬스터 -> 유저
+        for enemy in Classes.enemies:
+            if pygame.sprite.collide_rect(enemy, player):
+                remain = player.hp - enemy.attack_damage
+                if remain > 0:
+                    player.hp = remain
+                else:
+                    player.hp = 0
+
+        # print(player.mp)
+        Classes.show_player_state(player, screen, True)
+        for enemy in Classes.enemies:
+            Classes.show_player_state(enemy, screen, False)
+
+        screen.blit(player.image, player.rect)
+        Classes.texting(Classes.score, 40, 40, (255, 10, 10), screen)
+        pygame.display.flip()
+        clock.tick(fps)
+
+        if player.hp <= 0:
+            player.hp = 0
+            game_over = True
+
+    Classes.texting("It's time to study now. If you want to restart, press space",
+                    screen.get_rect().centerx, screen.get_rect().centery, (255, 255, 255), screen)
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            game_over = True
-        player.handle_event(event)
+            Quit = True
+        if event.key == pygame.K_SPACE:
+            level_tic = 0
+            fps = 30
+            spawn_rate = fps * 7
+            spawn_cnt = fps * 6
+            boss_spawn_cnt = 0
+            player = Classes.User((150, 150))
+            Classes.balls = []
+            Classes.enemies = []
+            Classes.score = 0
+            game_over = False
 
-    # 플레이어 관리
-    player.update()
-
-    # enemy 관리
-    spawn_cnt += 1
-    if spawn_cnt > spawn_rate:
-        spawn_cnt = 0
-        tmp_num = random.randrange(0, 4)
-        tmp_x = random.choice([0, pad_width-32])
-        tmp_y = random.randrange(0, pad_height-32)
-        Classes.enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
-    for enemy in Classes.enemies:
-        enemy.update(player)
-        screen.blit(enemy.image, enemy.rect)
-
-    # 공 관리
-    for ball in Classes.balls:
-        ball.update()
-        screen.blit(ball.image, ball.rect)
-
-    # 충돌 이벤트
-    for ball in Classes.balls:
-        ball_type = str(type(ball))[16:-2]
-        for enemy in Classes.enemies:
-            if pygame.sprite.collide_mask(ball, enemy):
-                ball.hit(enemy)
-
-    # print(player.mp)
-    Classes.show_player_state(player, screen, True)
-    for enemy in Classes.enemies:
-        Classes.show_player_state(enemy, screen, False)
-
-    screen.blit(player.image, player.rect)
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(fps)
 
+pygame.display.flip()
 pygame.quit()
