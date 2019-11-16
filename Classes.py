@@ -85,7 +85,7 @@ class Enemy(GameObject):
             self.speed = 5
             self.hp = 8000
             self.max_hp = 8000
-            self.hp_recovery_speed = 80
+            self.hp_recovery_speed = 8
             self.attack_damage = 5
         if monster_num == 3:    # 검댕이
             self.default_speed = 15
@@ -164,6 +164,7 @@ class Enemy(GameObject):
             global score
             enemies.remove(self)
             score += 5
+            player.mp += 20
 
         # 이벤트명 설정
         self.enemy_to_user(player)
@@ -256,6 +257,7 @@ class User(GameObject):
 
         # 바로 이전 상태 저장 변수
         self.bef_state = 'stand_down'
+        self.bef_attack = ''
 
         # 정보
         self.event_name = 'stand_down'
@@ -268,6 +270,11 @@ class User(GameObject):
         self.hp_recovery_speed = 1
         self.speed = 20
         self.tic = 0
+        # 상태 이상
+        self.slow = 0  # leaf
+        self.burned = 0  # fireball
+        self.paralysis = 0  # blade
+        self.confusion = 0  # dark
 
     def update(self):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
@@ -295,20 +302,6 @@ class User(GameObject):
             if self.rect.y < pad_height - 34:
                 self.rect.y += 5
 
-        # 공격 이벤트
-        if self.event_name[0:6] == 'attack' or 0 < self.attack_motion_number < 3:
-            # 던지는 모션이 시작되었고, 마나가 충분하면 던진다
-            if self.attack_motion_number == 1 and self.check_mp(self.event_name[7:]):
-                self.throw(self.event_name[7:])
-            if self.bef_state == 'stand_left':
-                self.clip(self.throw_left_states)
-            if self.bef_state == 'stand_right':
-                self.clip(self.throw_right_states)
-            if self.bef_state == 'stand_up':
-                self.clip(self.throw_up_states)
-            if self.bef_state == 'stand_down':
-                self.clip(self.throw_down_states)
-
         # 정지 이벤트
         if self.event_name == 'stand_left':
             self.clip(self.left_stand)
@@ -319,8 +312,26 @@ class User(GameObject):
         if self.event_name == 'stand_down':
             self.clip(self.down_stand)
 
-        if self.event_name[0:6] != 'attack' and self.attack_motion_number == 3:
-            self.attack_motion_number = 0
+        # 공격 이벤트
+        if 0 < self.attack_motion_number:
+            # 던지는 모션이 시작되었고, 마나가 충분하면 던진다
+            if self.attack_motion_number == 2 and self.check_mp(self.bef_attack):
+                self.throw(self.bef_attack)
+            if self.bef_state == 'stand_left':
+                self.clip(self.throw_left_states)
+            if self.bef_state == 'stand_right':
+                self.clip(self.throw_right_states)
+            if self.bef_state == 'stand_up':
+                self.clip(self.throw_up_states)
+            if self.bef_state == 'stand_down':
+                self.clip(self.throw_down_states)
+
+        if self.event_name[0:6] == 'attack':
+            # 공격 상태 저장
+            self.bef_attack = self.event_name[7:]
+
+        if self.event_name[0:6] != 'attack' and self.attack_motion_number == 0:
+            # 현재 어택 상태가 아니면 상태 초기화
             if self.event_name[0:5] == 'stand':
                 self.bef_state = self.event_name
                 self.frame = 0
@@ -340,11 +351,11 @@ class User(GameObject):
         self.mask = pygame.mask.from_surface(self.image)
 
     def check_mp(self, ball_type):
-        if ball_type == 'fireball' and self.mp >= 50:
-            self.mp -= 50
+        if ball_type == 'fireball' and self.mp >= 20:
+            self.mp -= 20
             return True
-        if ball_type == 'blade' and self.mp >= 150:
-            self.mp -= 150
+        if ball_type == 'blade' and self.mp >= 50:
+            self.mp -= 50
             return True
         if ball_type == 'leaf' and self.mp >= 200:
             self.mp -= 200
@@ -427,10 +438,10 @@ class Ball(GameObject):
 
     def hit(self, enemy):
         enemy.hp -= self.damage
-        enemy.slow = self.slow
-        enemy.burned = self.burned
-        enemy.paralysis = self.paralysis
-        enemy.confusion = self.confusion
+        enemy.slow = max(self.slow, enemy.slow)
+        enemy.burned = max(enemy.burned, self.burned)
+        enemy.paralysis = max(enemy.paralysis, self.paralysis)
+        enemy.confusion = max(enemy.confusion, self.confusion)
 
     def update(self):
         # 파괴
@@ -496,9 +507,9 @@ class Fireball(Ball):
         self.up_states = {0: (15, 225, 40, 75), 1: (90, 225, 40, 75), 2: (165, 225, 40, 75)}
 
         # 정보
-        self.damage = 30
+        self.damage = 20
         self.slow = 0       # leaf
-        self.burned = 5000   # fireball
+        self.burned = 500   # fireball
         self.paralysis = 0  # blade
         self.confusion = 0  # dark
 
@@ -661,11 +672,17 @@ def show_player_state(player, screen, mp_t):
     # texting(player.hp, 100, 50, 'red', screen)
     # texting(player.mp, 100, 80, 'blue', screen)
     if mp_t:
+        # mp 가 존재하는 존재라면
         up = 20
         hp_color = (255, 0, 0)
     else:
         up = 10
-        hp_color = (125, 0, 0)
+        if player.burned > 0:
+            # 불타고 있으면
+            hp_color = (200, 100, 100)
+        else:
+            # 불타지 않는다면
+            hp_color = (125, 0, 0)
 
     pygame.draw.rect(screen, (100, 0, 0), (player.rect.x, player.rect.y - up, 32, 8))
     pygame.draw.rect(screen, hp_color,

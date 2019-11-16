@@ -92,7 +92,7 @@ while not Quit:
                     Classes.destroy(ball, enemy)
         # 몬스터 -> 유저
         for enemy in Classes.enemies:
-            if pygame.sprite.collide_rect(enemy, player):
+            if not enemy.paralysis and pygame.sprite.collide_rect(enemy, player):
                 remain = player.hp - enemy.attack_damage
                 if remain > 0:
                     player.hp = remain
