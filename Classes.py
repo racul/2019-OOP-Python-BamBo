@@ -398,7 +398,7 @@ class User(GameObject):
                 self.event_name = 'attack_blade'
             if event.key == pygame.K_l:
                 self.event_name = 'attack_leaf'
-            if event.key == pygame.K_SEMICOLON:
+            if event.key == pygame.K_i:
                 self.event_name = 'attack_dark'
             # if event.key == pygame.K_t:
             #     self.event_name = 'attack_lightning'
@@ -411,7 +411,7 @@ class User(GameObject):
                 self.event_name = 'stand_up'
             if event.key == pygame.K_s and self.bef_state == 'stand_down':
                 self.event_name = 'stand_down'
-            if event.key in [pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_SEMICOLON, pygame.K_t]:
+            if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.K_SEMICOLON, pygame.K_t]:
                 if self.bef_state == 'stand_left':
                     self.event_name = 'stand_left'
                 if self.bef_state == 'stand_right':
