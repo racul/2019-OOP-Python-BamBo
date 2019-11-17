@@ -403,15 +403,15 @@ class User(GameObject):
             # if event.key == pygame.K_t:
             #     self.event_name = 'attack_lightning'
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_a:
                 self.event_name = 'stand_left'
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_d:
                 self.event_name = 'stand_right'
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_w:
                 self.event_name = 'stand_up'
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_s:
                 self.event_name = 'stand_down'
-            if event.key in [pygame.K_f, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_t]:
+            if event.key in [pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_SEMICOLON, pygame.K_t]:
                 if self.bef_state == 'stand_left':
                     self.event_name = 'stand_left'
                 if self.bef_state == 'stand_right':
