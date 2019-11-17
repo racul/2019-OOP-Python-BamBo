@@ -426,7 +426,7 @@ class User(GameObject):
             if event.key == pygame.K_s:
                 self.event_name = 'stand_down'
                 self.move_state['down'] = False
-            if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.K_SEMICOLON, pygame.K_t]:
+            if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.l, pygame.K_t]:
                 if self.bef_state == 'stand_left':
                     self.event_name = 'stand_left'
                 if self.bef_state == 'stand_right':
@@ -700,7 +700,7 @@ def show_player_state(player, screen, mp_t):
             # 불타지 않는다면
             hp_color = (125, 0, 0)
 
-    pygame.draw.rect(screen, (100, 0, 0), (player.rect.x, player.rect.y - up, 32, 8))
+    pygame.draw.rect(screen, (50, 0, 0), (player.rect.x, player.rect.y - up, 32, 8))
     pygame.draw.rect(screen, hp_color,
                      (player.rect.x, player.rect.y - up, 32 - ((player.max_hp - player.hp) / player.max_hp * 32), 8))
     if mp_t:
