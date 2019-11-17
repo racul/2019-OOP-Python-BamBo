@@ -258,6 +258,7 @@ class User(GameObject):
         # 바로 이전 상태 저장 변수
         self.bef_state = 'stand_down'
         self.bef_attack = ''
+        self.move_state = {'down' : False, 'up' : False, 'left' : False, 'right' : False}
 
         # 정보
         self.event_name = 'stand_down'
@@ -382,16 +383,26 @@ class User(GameObject):
         if ball_type == 'lightning':
             balls.append(Lightning(self.rect.x, 0, self.bef_state[6:]))
 
+    def find_move(self):
+        for move_event in ['down', 'up', 'left', 'right']:
+            if self.move_state[move_event]:
+                return move_event
+        return None
+
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
                 self.event_name = 'left'
+                self.move_state[self.event_name] = True
             if event.key == pygame.K_d:
                 self.event_name = 'right'
+                self.move_state[self.event_name] = True
             if event.key == pygame.K_w:
                 self.event_name = 'up'
+                self.move_state[self.event_name] = True
             if event.key == pygame.K_s:
                 self.event_name = 'down'
+                self.move_state[self.event_name] = True
             if event.key == pygame.K_j:
                 self.event_name = 'attack_fireball'
             if event.key == pygame.K_k:
@@ -403,14 +414,18 @@ class User(GameObject):
             # if event.key == pygame.K_t:
             #     self.event_name = 'attack_lightning'
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a and self.bef_state == 'stand_left':
+            if event.key == pygame.K_a:
                 self.event_name = 'stand_left'
-            if event.key == pygame.K_d and self.bef_state == 'stand_right':
+                self.move_state['left'] = False
+            if event.key == pygame.K_d:
                 self.event_name = 'stand_right'
-            if event.key == pygame.K_w and self.bef_state == 'stand_up':
+                self.move_state['right'] = False
+            if event.key == pygame.K_w:
                 self.event_name = 'stand_up'
-            if event.key == pygame.K_s and self.bef_state == 'stand_down':
+                self.move_state['up'] = False
+            if event.key == pygame.K_s:
                 self.event_name = 'stand_down'
+                self.move_state['down'] = False
             if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.K_SEMICOLON, pygame.K_t]:
                 if self.bef_state == 'stand_left':
                     self.event_name = 'stand_left'
@@ -420,6 +435,8 @@ class User(GameObject):
                     self.event_name = 'stand_up'
                 if self.bef_state == 'stand_down':
                     self.event_name = 'stand_down'
+            if self.find_move():
+                self.event_name = self.find_move()
 
 
 class Ball(GameObject):

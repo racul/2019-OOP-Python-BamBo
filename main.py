@@ -10,7 +10,7 @@ pad_width = Classes.pad_width  # 게임화면의 가로크기
 pad_height = Classes.pad_height  # 게임화면의 세로크기
 level_tic = 0
 fps = 30
-spawn_rate = fps * 7
+spawn_rate = fps * 6
 spawn_cnt = fps * 6
 boss_rate = 15
 boss_spawn_cnt = 0
@@ -48,16 +48,16 @@ while not Quit:
         # 레벨 조정
         level_tic += 1
         if level_tic == fps * 20:
-            spawn_rate = fps * 6
+            spawn_rate = fps * 5
             boss_rate = 14
         if level_tic == fps * 60:
-            spawn_rate = fps * 5
+            spawn_rate = fps * 4
             boss_rate = 12
         if level_tic == fps * 180:
-            spawn_rate = fps * 4
+            spawn_rate = fps * 3
             boss_rate = 10
         if level_tic == fps * 360:
-            spawn_rate = fps * 3
+            spawn_rate = fps * 2.5
             boss_rate = 6
         if level_tic == fps * 480:
             spawn_rate = fps * 2
