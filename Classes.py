@@ -263,9 +263,9 @@ class User(GameObject):
         # 정보
         self.event_name = 'stand_down'
         self.attack_motion_number = 0
-        self.mp = 600
-        self.max_mp = 600
-        self.mp_recovery_speed = 1
+        self.mp = 800
+        self.max_mp = 800
+        self.mp_recovery_speed = 1.2
         self.hp = 1000
         self.max_hp = 1000
         self.hp_recovery_speed = 1
