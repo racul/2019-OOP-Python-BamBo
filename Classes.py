@@ -635,7 +635,7 @@ class Dark(Ball):
                           3: (475, 625, 100, 100)}
 
         # 정보
-        self.damage = 50
+        self.damage = 60
         self.slow = 0  # leaf
         self.burned = 0  # fireball
         self.paralysis = 0  # blade
