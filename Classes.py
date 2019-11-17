@@ -426,7 +426,7 @@ class User(GameObject):
             if event.key == pygame.K_s:
                 self.event_name = 'stand_down'
                 self.move_state['down'] = False
-            if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.l, pygame.K_t]:
+            if event.key in [pygame.K_j, pygame.K_k, pygame.K_i, pygame.K_l, pygame.K_t]:
                 if self.bef_state == 'stand_left':
                     self.event_name = 'stand_left'
                 if self.bef_state == 'stand_right':
