@@ -126,7 +126,7 @@ while not Quit:
 
     Classes.texting("You DEAD!!!!",
                     screen.get_rect().centerx, screen.get_rect().centery , (255, 0, 0), 50, screen)
-    Classes.texting("It's time to study now",
+    Classes.texting("It's time to study",
                     screen.get_rect().centerx, screen.get_rect().centery + 50, (255, 100, 100), 30, screen)
     Classes.texting("If you want to restart, prees SPACE",
                     screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 18, screen)

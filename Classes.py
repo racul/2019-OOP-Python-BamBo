@@ -448,7 +448,6 @@ class Ball(GameObject):
         self.destroyer -= 1
         if self.destroyer <= 0:
             balls.remove(self)
-            print("del")
 
         # tic 계산
         self.tic += 1
