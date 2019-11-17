@@ -384,21 +384,21 @@ class User(GameObject):
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.event_name = 'left'
-            if event.key == pygame.K_RIGHT:
-                self.event_name = 'right'
-            if event.key == pygame.K_UP:
-                self.event_name = 'up'
-            if event.key == pygame.K_DOWN:
-                self.event_name = 'down'
-            if event.key == pygame.K_f:
-                self.event_name = 'attack_fireball'
-            if event.key == pygame.K_d:
-                self.event_name = 'attack_blade'
-            if event.key == pygame.K_s:
-                self.event_name = 'attack_leaf'
             if event.key == pygame.K_a:
+                self.event_name = 'left'
+            if event.key == pygame.K_d:
+                self.event_name = 'right'
+            if event.key == pygame.K_w:
+                self.event_name = 'up'
+            if event.key == pygame.K_s:
+                self.event_name = 'down'
+            if event.key == pygame.K_j:
+                self.event_name = 'attack_fireball'
+            if event.key == pygame.K_k:
+                self.event_name = 'attack_blade'
+            if event.key == pygame.K_l:
+                self.event_name = 'attack_leaf'
+            if event.key == pygame.K_SEMICOLON:
                 self.event_name = 'attack_dark'
             # if event.key == pygame.K_t:
             #     self.event_name = 'attack_lightning'

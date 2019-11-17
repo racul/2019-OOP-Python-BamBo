@@ -20,6 +20,12 @@ TPS 플래시 게임인 BOX HEAD 는 좀비가 적으로 나오는 게임이다.
 ## 5. 주요기능
 1. 스프라이트를 이용한 화려한 애니메이션
 	- 스프라이트 이미지를 적극 활용하여, 캐릭터의 움직임이나, 스킬을 화려하게 만든다.
+1. 플레이어
+    1. hp : 1000
+    2. mp : 600
+    3. 여러 가지 스킬 사용 가능
+    4. hp와 mp는 서서히 회복
+    5. wasd 로 이동, jkl; 로 공격
 1. 악령  
 	1. 종류  
 		1. 검둥이
@@ -44,22 +50,27 @@ TPS 플래시 게임인 BOX HEAD 는 좀비가 적으로 나오는 게임이다.
         1. 공격력
         1. 사출속도
         1. 상태이상능력
+        1. 마나 소비 (player 객체에서 처리)
   	1. 종류
 		1. fireball (key_f)
 		    - 화상상태 유발 : 매초 최대 체력의 5% 데미지
+		    - mp소비 : 20
 		1. blade (key_d)
 		    - 관통능력 없음. 순간 데미지가 강함.
 		    - 마비 : 수초간 움직이지 않음. 공격도 하지 않음
+		    - mp소비 : 80
 		1. leaf (key_s)
 		    - 슬로우상태 유발 : 속도 75% 감소
+		    - mp소비 : 150
 		1. dark (key_a)
 		    - 혼란상태 유발 : 이동 방향 무작위
+		    - mp소비 : 110
 1. hp / mp 시스템  
-	- hp는 체력으로, 악령과 접촉할시 악령에 공격력 만큼 매 초 마다 깎인다.  
-	- mp는 스킬을 사용할 때 필요한 에너지로, 매초 일정량 회복된다. 최대치는 600이다.
+	- hp는 체력으로, 악령과 접촉할시 악령의 공격력 만큼 매 틱 마다 깎인다.  
 2. 학교를 배경으로 한 스테이지  
+    - 스테이지는 sasa 를 상공에서 찍은 모습으로 하였다.
 	- hp 가 0이 될 때까지 진행된다.
-	- 악령은 맵 양 옆 외각에서 스폰되며, 스폰 속도는 점점 빨라진다.
+	- 악령은 맵 양 옆 외각에서 스폰되며, 스폰 속도는 시간이 지남에 따라 증가한다.
 
 ## 6. 프로젝트 핵심
 - sprite 를 이용한 화려한 움직임과 스킬.  
@@ -91,14 +102,9 @@ https://opengameart.org/content/fumiko-complete-charset
 https://www.deviantart.com/my-invader-mia/art/Creepypasta-Sprite-sheet-505118676
 https://github.com/skoam/fumiko-pygame
 https://stackoverflow.com/questions/30418824/pygame-how-to-get-attack-controls-working
+
 음악 넣기 / 화면에 text 띄우기)
 https://futurestorys.tistory.com/102
 https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
 
 <hr>
-
-
-
-https://repl.it/@james1990a/UnselfishJoyfulDecimals
-
-## Commit TEST
