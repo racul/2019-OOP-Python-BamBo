@@ -48,7 +48,7 @@ def cheating():
     if cheat_input.upper() == 'POWER':
         cheat_PO = not cheat_PO
     if cheat_input.upper() == 'SPEED':
-        cheat_SP = not cheat_SP
+        Classes.cheat_SP = not Classes.cheat_SP
     if cheat_input.upper() == 'MONEY':
         Classes.cheat_MP = not Classes.cheat_MP
 

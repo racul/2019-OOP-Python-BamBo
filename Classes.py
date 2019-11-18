@@ -10,6 +10,7 @@ balls = []
 enemies = []
 score = 0
 cheat_MP = False
+cheat_SP = False
 
 
 class GameObject(pygame.sprite.Sprite):
@@ -281,10 +282,11 @@ class User(GameObject):
     def update(self):
         # 현재 해당하는 event_name 에 맞추어 event 를 실행하는 함수
         # tic 계산
-        self.tic += 1
-        if 30 / self.speed > self.tic:
-            return
-        self.tic = 0
+        if not cheat_SP:
+            self.tic += 1
+            if 30 / self.speed > self.tic:
+                return
+            self.tic = 0
 
         # 이동 이벤트
         if self.event_name == 'left':
