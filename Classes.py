@@ -4,8 +4,8 @@ import random  # random 라이브러리 임포트
 # 게임에 사용되는 전역변수 정의
 BLACK = (0, 0, 0)  # 게임 바탕화면의 색상
 RED = (255, 0, 0)
-pad_width = 710  # 게임화면의 가로크기
-pad_height = 550  # 게임화면의 세로크기
+pad_width = 1280  # 게임화면의 가로크기
+pad_height = 720  # 게임화면의 세로크기
 balls = []
 enemies = []
 score = 0

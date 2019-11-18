@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 import time
 import random
 import Classes
@@ -28,10 +29,11 @@ def spawn_random_enemy(boss):
 
 pygame.init()
 
-background = pygame.image.load('img/field2.png')
+background = pygame.image.load('img/field4.png')
 background.fill((100, 100, 100, 200), None, pygame.BLEND_RGBA_MULT)
-screen = pygame.display.set_mode((pad_width, pad_height))
-pygame.display.set_caption("Python/Pygame Animation")
+background = pygame.transform.scale(background, (pad_width, pad_height))
+screen = pygame.display.set_mode((pad_width, pad_height), FULLSCREEN)
+pygame.display.set_caption("BamBo")
 clock = pygame.time.Clock()
 player = Classes.User((150, 150))
 
@@ -40,9 +42,13 @@ Quit = False
 
 while not Quit:
 
+    # 배경
+    screen.fill((100, 100, 100))
+    screen.blit(background, (0, 0))
+
     while not game_over:
         # 배경
-        screen.fill((0, 0, 0))
+        screen.fill((100, 100, 100))
         screen.blit(background, (0, 0))
 
         # 레벨 조정
@@ -71,6 +77,10 @@ while not Quit:
             if event.type == pygame.QUIT:
                 game_over = True
                 Quit = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game_over = True
+                    Quit = True
             player.handle_event(event)
 
         # 플레이어 관리
@@ -115,36 +125,46 @@ while not Quit:
         for enemy in Classes.enemies:
             Classes.show_player_state(enemy, screen, False)
 
+        # 맨 위에 사람 그리기
         screen.blit(player.image, player.rect)
-        Classes.texting(Classes.score, 40, 40, (255, 10, 10), 24, screen)
+        # 스코어 표시
+        Classes.texting(Classes.score, 40, 40, (255, 10, 10), 30, screen)
+        # 화면 생성
         pygame.display.flip()
+        # 시간 딜레이
         clock.tick(fps)
 
         if player.hp <= 0:
             player.hp = 0
             game_over = True
 
-    Classes.texting("You DEAD!!!!",
-                    screen.get_rect().centerx, screen.get_rect().centery , (255, 0, 0), 50, screen)
+    # 스코어 표시
+    Classes.texting(Classes.score, 40, 40, (255, 10, 10), 30, screen)
+    # 종료 메세지
+    Classes.texting("You're DEAD!!!!",
+                    screen.get_rect().centerx, screen.get_rect().centery, (255, 0, 0), 60, screen)
     Classes.texting("It's time to study",
-                    screen.get_rect().centerx, screen.get_rect().centery + 50, (255, 100, 100), 30, screen)
-    Classes.texting("If you want to restart, prees SPACE",
-                    screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 18, screen)
+                    screen.get_rect().centerx, screen.get_rect().centery + 50, (255, 100, 100), 35, screen)
+    Classes.texting("If you want to restart, press SPACE",
+                    screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 20, screen)
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             Quit = True
-        if event.key == pygame.K_SPACE:
-            level_tic = 0
-            fps = 30
-            spawn_rate = fps * 7
-            spawn_cnt = fps * 6
-            boss_spawn_cnt = 0
-            player = Classes.User((150, 150))
-            Classes.balls = []
-            Classes.enemies = []
-            Classes.score = 0
-            game_over = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                Quit = True
+            if event.key == pygame.K_SPACE:
+                level_tic = 0
+                fps = 30
+                spawn_rate = fps * 7
+                spawn_cnt = fps * 6
+                boss_spawn_cnt = 0
+                player = Classes.User((150, 150))
+                Classes.balls = []
+                Classes.enemies = []
+                Classes.score = 0
+                game_over = False
 
     pygame.display.flip()
     clock.tick(fps)
