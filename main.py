@@ -16,6 +16,8 @@ spawn_rate = fps * 6
 spawn_cnt = fps * 6
 boss_rate = 15
 boss_spawn_cnt = 0
+cheat_PO = False
+cheat_SP = False
 
 
 def spawn_random_enemy(boss):
@@ -28,12 +30,36 @@ def spawn_random_enemy(boss):
     Classes.enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
 
 
+def cheating():
+    global cheat_PO, cheat_SP
+    cheat_on = True
+    print("cheat_on")
+    cheat_input = ''
+    while cheat_on:
+        for cheat_key in pygame.event.get():
+            if cheat_key.type == KEYDOWN:
+                if cheat_key.type == KEYDOWN:
+                    if cheat_key.unicode.isalpha():
+                        cheat_input += cheat_key.unicode
+                    elif cheat_key.key == K_BACKSPACE:
+                        cheat_input = cheat_input[:-1]
+                    elif cheat_key.key == K_RETURN:
+                        cheat_on = False
+    if cheat_input.upper() == 'POWER':
+        cheat_PO = not cheat_PO
+    if cheat_input.upper() == 'SPEED':
+        cheat_SP = not cheat_SP
+    if cheat_input.upper() == 'MONEY':
+        Classes.cheat_MP = not Classes.cheat_MP
+
+
 pygame.init()
 
 background = pygame.image.load('img/field4.png')
 background.fill((100, 100, 100, 200), None, pygame.BLEND_RGBA_MULT)
 background = pygame.transform.scale(background, (pad_width, pad_height))
-screen = pygame.display.set_mode((pad_width, pad_height), FULLSCREEN)
+# screen = pygame.display.set_mode((pad_width, pad_height), FULLSCREEN | HWSURFACE)
+screen = pygame.display.set_mode((pad_width, pad_height))
 pygame.display.set_caption("BamBo")
 clock = pygame.time.Clock()
 player = Classes.User((pad_width/2, pad_height/2))
@@ -97,12 +123,16 @@ while not Quit:
                 if event.key == pygame.K_ESCAPE:
                     game_over = True
                     Quit = True
+                # 치트
+                if event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    cheating()
+                        
             player.handle_event(event)
 
         # 플레이어 관리
         player.update()
 
-        # enemy 관리
+        # enemy 스폰 및 업데이트
         spawn_cnt += 1
         if spawn_cnt > spawn_rate:
             spawn_cnt = 0
@@ -120,7 +150,7 @@ while not Quit:
             ball.update()
             screen.blit(ball.image, ball.rect)
 
-        # 충돌 이벤트
+        # 충돌 이벤트 (데미지 부여)
         # 공 -> 몬스터
         for ball in Classes.balls:
             for enemy in Classes.enemies:
@@ -128,26 +158,25 @@ while not Quit:
                     ball.hit(enemy)
                     Classes.destroy(ball, enemy)
         # 몬스터 -> 유저
-        for enemy in Classes.enemies:
-            if not enemy.paralysis and pygame.sprite.collide_rect(enemy, player):
-                remain = player.hp - enemy.attack_damage
-                if remain > 0:
-                    player.hp = remain
-                else:
-                    player.hp = 0
-
-        # print(player.mp)
+        if not cheat_PO:
+            for enemy in Classes.enemies:
+                if not enemy.paralysis and pygame.sprite.collide_rect(enemy, player):
+                    remain = player.hp - enemy.attack_damage
+                    if remain > 0:
+                        player.hp = remain
+                    else:
+                        player.hp = 0
+        # 스텟 나타내기
         Classes.show_player_state(player, screen, True)
         for enemy in Classes.enemies:
             Classes.show_player_state(enemy, screen, False)
-
         # 맨 위에 사람 그리기
         screen.blit(player.image, player.rect)
         # 화면 생성
         pygame.display.flip()
         # 시간 딜레이
         clock.tick(fps)
-
+        # 게임 종료
         if player.hp <= 0:
             player.hp = 0
             game_over = True

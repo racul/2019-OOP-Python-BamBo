@@ -9,6 +9,7 @@ pad_height = 720  # 게임화면의 세로크기
 balls = []
 enemies = []
 score = 0
+cheat_MP = False
 
 
 class GameObject(pygame.sprite.Sprite):
@@ -166,7 +167,7 @@ class Enemy(GameObject):
             score += 5
             player.mp += 20
 
-        # 이벤트명 설정
+        # 이벤트명 설정 (이동 상태)
         self.enemy_to_user(player)
 
         # 상태이상 판정
@@ -346,6 +347,8 @@ class User(GameObject):
             self.mp += self.mp_recovery_speed
         if self.hp < self.max_hp:
             self.hp += self.hp_recovery_speed
+        if cheat_MP:
+            self.mp = self.max_mp
 
         # sheet 의 내용을 image 에 저장
         self.image = self.sheet.subsurface(self.sheet.get_clip())
