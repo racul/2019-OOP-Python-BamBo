@@ -10,6 +10,7 @@ RED = (255, 0, 0)
 pad_width = Classes.pad_width  # 게임화면의 가로크기
 pad_height = Classes.pad_height  # 게임화면의 세로크기
 level_tic = 0
+level = 1
 fps = 30
 spawn_rate = fps * 6
 spawn_cnt = fps * 6
@@ -23,7 +24,7 @@ def spawn_random_enemy(boss):
     else:
         tmp_num = 2
     tmp_x = random.choice([0, pad_width - 32])
-    tmp_y = random.randrange(0, pad_height - 32)
+    tmp_y = random.randrange(32, pad_height - 32)
     Classes.enemies.append(Classes.Enemy(position=[tmp_x, tmp_y], monster_num=tmp_num))
 
 
@@ -35,7 +36,7 @@ background = pygame.transform.scale(background, (pad_width, pad_height))
 screen = pygame.display.set_mode((pad_width, pad_height), FULLSCREEN)
 pygame.display.set_caption("BamBo")
 clock = pygame.time.Clock()
-player = Classes.User((150, 150))
+player = Classes.User((pad_width/2, pad_height/2))
 
 game_over = False
 Quit = False
@@ -54,23 +55,29 @@ while not Quit:
         # 레벨 조정
         level_tic += 1
         if level_tic == fps * 20:
-            spawn_rate = fps * 5
+            level = 2
+            spawn_rate = fps * 4
             boss_rate = 14
         if level_tic == fps * 60:
-            spawn_rate = fps * 4
+            level = 3
+            spawn_rate = fps * 3
             boss_rate = 12
         if level_tic == fps * 180:
-            spawn_rate = fps * 3
+            level = 4
+            spawn_rate = fps * 2.5
             boss_rate = 10
         if level_tic == fps * 360:
+            level = 5
             spawn_rate = fps * 2.5
-            boss_rate = 6
+            boss_rate = 9
         if level_tic == fps * 480:
+            level = 6
             spawn_rate = fps * 2
-            boss_rate = 8
+            boss_rate = 12
         if level_tic == fps * 600:
+            level = 7
             spawn_rate = fps * 1
-            boss_rate = 8
+            boss_rate = 15
 
         # 이벤트 입력 관리
         for event in pygame.event.get():
@@ -128,7 +135,10 @@ while not Quit:
         # 맨 위에 사람 그리기
         screen.blit(player.image, player.rect)
         # 스코어 표시
-        Classes.texting(Classes.score, 40, 40, (255, 10, 10), 30, screen)
+        Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
+        Classes.texting('Stage : ' + str(level), 80, 80, (150, 150, 150), 30, screen)
+        Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
+        Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
         # 화면 생성
         pygame.display.flip()
         # 시간 딜레이
@@ -138,8 +148,6 @@ while not Quit:
             player.hp = 0
             game_over = True
 
-    # 스코어 표시
-    Classes.texting(Classes.score, 40, 40, (255, 10, 10), 30, screen)
     # 종료 메세지
     Classes.texting("You're DEAD!!!!",
                     screen.get_rect().centerx, screen.get_rect().centery, (255, 0, 0), 60, screen)
@@ -156,11 +164,12 @@ while not Quit:
                 Quit = True
             if event.key == pygame.K_SPACE:
                 level_tic = 0
+                level = 1
                 fps = 30
                 spawn_rate = fps * 7
                 spawn_cnt = fps * 6
                 boss_spawn_cnt = 0
-                player = Classes.User((150, 150))
+                player = Classes.User((pad_width/2, pad_height/2))
                 Classes.balls = []
                 Classes.enemies = []
                 Classes.score = 0

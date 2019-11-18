@@ -676,7 +676,7 @@ def destroy(ball, enemy):
 
 def texting(arg, x, y, color, font_size, screen):
     font = pygame.font.Font('freesansbold.ttf', font_size)
-    text = font.render(str(arg).zfill(4), True, color)  # zfill : 앞자리를 0으로 채움
+    text = font.render(str(arg), True, color)  # zfill : 앞자리를 0으로 채움
 
     text_rect = text.get_rect()  # 텍스트 객체를 출력위치에 가져옴
     text_rect.centerx = x  # 출력할 때의 x 좌표를 설정한다
