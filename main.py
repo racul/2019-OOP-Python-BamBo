@@ -49,8 +49,17 @@ while not Quit:
 
     while not game_over:
         # 배경
-        screen.fill((100, 100, 100))
+        screen.fill((180, 180, 160))
         screen.blit(background, (0, 0))
+        # 스코어 표시
+        Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
+        Classes.texting('Stage : ' + str(level), 80, 80, (200, 200, 200), 30, screen)
+        Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
+        Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
+        Classes.texting('hp : ' + str(player.hp).zfill(4), pad_width - 78, pad_height - 60, (200, 100, 100), 20,
+                        screen)
+        Classes.texting('mp : ' + str(int(player.mp)).zfill(4), pad_width - 80, pad_height - 30, (100, 100, 200), 20,
+                        screen)
 
         # 레벨 조정
         level_tic += 1
@@ -134,11 +143,6 @@ while not Quit:
 
         # 맨 위에 사람 그리기
         screen.blit(player.image, player.rect)
-        # 스코어 표시
-        Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
-        Classes.texting('Stage : ' + str(level), 80, 80, (150, 150, 150), 30, screen)
-        Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
-        Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
         # 화면 생성
         pygame.display.flip()
         # 시간 딜레이
@@ -155,6 +159,15 @@ while not Quit:
                     screen.get_rect().centerx, screen.get_rect().centery + 50, (255, 100, 100), 35, screen)
     Classes.texting("If you want to restart, press SPACE",
                     screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 20, screen)
+    # 스코어 표시
+    Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
+    Classes.texting('Stage : ' + str(level), 80, 80, (200, 200, 200), 30, screen)
+    Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
+    Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
+    Classes.texting('hp : ' + str(player.hp).zfill(4), pad_width - 78, pad_height - 60, (200, 100, 100), 20,
+                    screen)
+    Classes.texting('mp : ' + str(int(player.mp)).zfill(4), pad_width - 80, pad_height - 30, (100, 100, 200), 20,
+                    screen)
     # 이벤트 입력 관리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
