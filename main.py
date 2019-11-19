@@ -35,7 +35,7 @@ def spawn_random_enemy(boss):
 
 
 def cheating():
-    global cheat_PO, cheat_SP, cheat_Hell
+    global cheat_PO, cheat_SP, cheat_Hell, level_tic, level
     cheat_on = True
     print("cheat_on")
     cheat_input = ''
@@ -44,6 +44,9 @@ def cheating():
             if cheat_key.type == KEYDOWN:
                 if cheat_key.type == KEYDOWN:
                     if cheat_key.unicode.isalpha():
+                        cheat_input += cheat_key.unicode
+                    elif cheat_key.key in \
+                            [pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8]:
                         cheat_input += cheat_key.unicode
                     elif cheat_key.key == K_BACKSPACE:
                         cheat_input = cheat_input[:-1]
@@ -57,6 +60,11 @@ def cheating():
         Classes.cheat_MP = not Classes.cheat_MP
     if cheat_input.upper() == 'CHALLENGE':
         cheat_Hell = True
+    if cheat_input.upper()[:5] == 'LEVEL' and len(cheat_input) == 6 and \
+            cheat_input[5] in ['2', '3', '4', '5', '6', '7', '8']:
+        level_tic = level_times[int(cheat_input[5]) - 1] * fps - 10
+        level = int(cheat_input[5]) - 1
+        print(cheat_input[5])
 
 
 pygame.init()
