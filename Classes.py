@@ -689,6 +689,16 @@ def texting(arg, x, y, color, font_size, screen):
     screen.blit(text, text_rect)  # 화면에 텍스트객체를 그린다.
 
 
+def textingL(arg, x, y, color, font_size, screen):
+    font = pygame.font.Font('freesansbold.ttf', font_size)
+    text = font.render(str(arg), True, color)  # zfill : 앞자리를 0으로 채움
+
+    text_rect = text.get_rect()  # 텍스트 객체를 출력위치에 가져옴
+    text_rect.x = x  # 출력할 때의 x 좌표를 설정한다
+    text_rect.y = y
+    screen.blit(text, text_rect)  # 화면에 텍스트객체를 그린다.
+
+
 def show_player_state(player, screen, mp_t):
     # texting(player.hp, 100, 50, 'red', screen)
     # texting(player.mp, 100, 80, 'blue', screen)

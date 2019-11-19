@@ -18,6 +18,7 @@ boss_rate = 15
 boss_spawn_cnt = 0
 cheat_PO = False
 cheat_SP = False
+cheat_Hell = False
 
 
 def spawn_random_enemy(boss):
@@ -31,7 +32,7 @@ def spawn_random_enemy(boss):
 
 
 def cheating():
-    global cheat_PO, cheat_SP
+    global cheat_PO, cheat_SP, cheat_Hell
     cheat_on = True
     print("cheat_on")
     cheat_input = ''
@@ -51,6 +52,8 @@ def cheating():
         Classes.cheat_SP = not Classes.cheat_SP
     if cheat_input.upper() == 'MONEY':
         Classes.cheat_MP = not Classes.cheat_MP
+    if cheat_input.upper() == 'CHALLENGE':
+        cheat_Hell = True
 
 
 pygame.init()
@@ -78,8 +81,8 @@ while not Quit:
         screen.fill((180, 180, 160))
         screen.blit(background, (0, 0))
         # 스코어 표시
-        Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
-        Classes.texting('Stage : ' + str(level), 80, 80, (200, 200, 200), 30, screen)
+        Classes.textingL('Score : ' + str(Classes.score).zfill(4), 20, 40, (255, 10, 10), 30, screen)
+        Classes.textingL('Stage : ' + str(level), 20, 80, (200, 200, 200), 30, screen)
         Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
         Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
         Classes.texting('hp : ' + str(player.hp).zfill(4), pad_width - 78, pad_height - 60, (200, 100, 100), 20,
@@ -113,6 +116,12 @@ while not Quit:
             level = 7
             spawn_rate = fps * 1
             boss_rate = 15
+        if cheat_Hell:
+            level = 'HELL'
+            spawn_rate = fps * 0.2
+            boss_rate = 50
+            cheat_Hell = False
+            level_tic = fps * 6000
 
         # 이벤트 입력 관리
         for event in pygame.event.get():
@@ -189,8 +198,8 @@ while not Quit:
     Classes.texting("If you want to restart, press SPACE",
                     screen.get_rect().centerx, screen.get_rect().centery + 100, (50, 50, 50), 20, screen)
     # 스코어 표시
-    Classes.texting('Score : ' + str(Classes.score).zfill(4), 110, 40, (255, 10, 10), 30, screen)
-    Classes.texting('Stage : ' + str(level), 80, 80, (200, 200, 200), 30, screen)
+    Classes.textingL('Score : ' + str(Classes.score).zfill(4), 20, 40, (255, 10, 10), 30, screen)
+    Classes.textingL('Stage : ' + str(level), 20, 80, (200, 200, 200), 30, screen)
     Classes.texting('  move : wasd', pad_width - 100, 30, (150, 150, 150), 20, screen)
     Classes.texting('attack : jkli', pad_width - 100, 60, (200, 110, 110), 20, screen)
     Classes.texting('hp : ' + str(player.hp).zfill(4), pad_width - 78, pad_height - 60, (200, 100, 100), 20,
