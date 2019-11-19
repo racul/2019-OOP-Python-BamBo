@@ -95,9 +95,9 @@ while not Quit:
 
         # 레벨 조정
         level_tic += 1
-        for i in range(1, 9):
+        for i in range(1, 8):
             if level_tic == fps * level_times[i]:
-                level = level_times[i]
+                level = i
                 spawn_rate = fps * spawn_rates[i]
                 boss_rate = boss_rates[i]
         if cheat_Hell:
