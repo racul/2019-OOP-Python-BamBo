@@ -16,6 +16,9 @@ spawn_rate = fps * 6
 spawn_cnt = fps * 6
 boss_rate = 15
 boss_spawn_cnt = 0
+level_times = [0, 20, 60, 180, 300, 420, 520, 600]
+spawn_rates = [5, 4, 3, 2.5, 2, 2, 1, 0.8]
+boss_rates = [15, 14, 12, 10, 9, 12, 15, 20]
 cheat_PO = False
 cheat_SP = False
 cheat_Hell = False
@@ -92,30 +95,11 @@ while not Quit:
 
         # 레벨 조정
         level_tic += 1
-        if level_tic == fps * 20:
-            level = 2
-            spawn_rate = fps * 4
-            boss_rate = 14
-        if level_tic == fps * 60:
-            level = 3
-            spawn_rate = fps * 3
-            boss_rate = 12
-        if level_tic == fps * 180:
-            level = 4
-            spawn_rate = fps * 2.5
-            boss_rate = 10
-        if level_tic == fps * 360:
-            level = 5
-            spawn_rate = fps * 2.5
-            boss_rate = 9
-        if level_tic == fps * 480:
-            level = 6
-            spawn_rate = fps * 2
-            boss_rate = 12
-        if level_tic == fps * 600:
-            level = 7
-            spawn_rate = fps * 1
-            boss_rate = 15
+        for i in range(1, 9):
+            if level_tic == fps * level_times[i]:
+                level = level_times[i]
+                spawn_rate = fps * spawn_rates[i]
+                boss_rate = boss_rates[i]
         if cheat_Hell:
             level = 'HELL'
             spawn_rate = fps * 0.2
