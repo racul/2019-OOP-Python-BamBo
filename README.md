@@ -120,3 +120,5 @@ https://futurestorys.tistory.com/102
 https://www.geeksforgeeks.org/python-display-text-to-pygame-window/
 
 <hr>
+
+실행) main.py
